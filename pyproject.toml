@@ -28,6 +28,7 @@ dependencies = [
     "tabulate",
     "typer",
     "uvicorn[standard]",
+    "firebase-admin",
 ]
 [project.optional-dependencies]
 dev = [
