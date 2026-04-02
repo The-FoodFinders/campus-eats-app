@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import EmailStr
 
 
-class UserBase(SQLModel,):
+class UserBase(SQLModel):
     username: str = Field(index=True, unique=True)
     email: EmailStr = Field(index=True, unique=True)
     password: str
