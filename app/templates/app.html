@@ -104,7 +104,11 @@
                             </a>
                         </td>
                         <td>{{ r.description }}</td>
-                        <td>{{ r.location }}</td>
+                        <td>
+                            <a href="/map/{{ r.id }}">
+                                {{ r.location }}
+                            </a>
+                        </td>
                     </tr>
                     {% endfor %}
                 <tbody>

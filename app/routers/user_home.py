@@ -48,3 +48,24 @@ async def restaurant_menu(
             "menu_items": menu_items
         }
     )
+
+@router.get("/map/{restaurant_id}", response_class=HTMLResponse)
+async def view_map(
+    request: Request,
+    restaurant_id: int,
+    user: AuthDep,
+    db: SessionDep
+):
+    restaurant = db.get(Restaurant, restaurant_id)
+
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
+
+    return templates.TemplateResponse(
+        request=request,
+        name="map.html",
+        context={
+            "user": user,
+            "restaurant": restaurant
+        }
+    )

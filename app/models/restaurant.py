@@ -8,4 +8,7 @@ class Restaurant(SQLModel, table=True):
     location: str
     description: Optional[str] = None
 
+    latitude: float
+    longitude: float
+
     menu_items: List["MenuItem"] = Relationship(back_populates="restaurant")

@@ -85,7 +85,11 @@
     <div class="row mb-3">
         <h2>{{ restaurant.name }}</h2>
         <p>{{ restaurant.description }}</p>
-        <p><strong>Location:</strong> {{ restaurant.location }}</p>
+        <p><strong>Location:</strong> 
+            <a href="/map/{{ restaurant.id }}">
+                {{ restaurant.location }}
+            </a>
+        </p>
     </div>
 
     <div class="row">

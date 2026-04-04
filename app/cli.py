@@ -42,19 +42,25 @@ def initialize():
         restaurant1 = Restaurant(
             name="Lindas",
             description="Affordable student meals",
-            location="UWI St. Augustine"
+            location="UWI St. Augustine",
+            latitude=10.638671,
+            longitude=-61.398127
         )
 
         restaurant2 = Restaurant(
             name="KFC",
             description="Affordable student meals",
-            location="UWI St. Augustine"
+            location="UWI St. Augustine",
+            latitude=10.639109,
+            longitude=-61.398151
         )
 
         restaurant3 = Restaurant(
             name="Rituals",
             description="Affordable student meals",
-            location="UWI St. Augustine"
+            location="UWI St. Augustine",
+            latitude=10.638868,
+            longitude=-61.398615
         )
         
         db.add_all([
