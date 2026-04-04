@@ -22,24 +22,23 @@
 <div class="container">
     <h2>{{ restaurant.name }}</h2>
     <p>{{ restaurant.location }}</p>
-
-    <div id="map" style="height: 500px;"></div>
 </div>
+<div id="map" style="height: 500px;">
+    <script>
+        var lat = {{ restaurant.latitude }};
+        var lng = {{ restaurant.longitude }};
 
-<script>
-    var lat = {{ restaurant.latitude }};
-    var lng = {{ restaurant.longitude }};
+        var map = L.map('map').setView([lat, lng], 15);
 
-    var map = L.map('map').setView([lat, lng], 15);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+        var marker = L.marker([lat, lng]).addTo(map);
 
-    var marker = L.marker([lat, lng]).addTo(map);
-
-    marker.bindPopup("<b>{{ restaurant.name }}</b><br>{{ restaurant.location }}").openPopup();
-</script>
+        marker.bindPopup("<b>{{ restaurant.name }}</b><br>{{ restaurant.location }}").openPopup();
+    </script>
+</div>
 
 {% endblock %}
