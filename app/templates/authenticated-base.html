@@ -179,7 +179,7 @@
 
     <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
         <div class="brand">
-            <h3> Campus Eats</h3>
+            <h3>Menu</h3>
         </div>
 
         <!--these buttons don't do anything yet-->
@@ -190,12 +190,22 @@
                     Food Spots
                 </a>
             </li>
+            
+            <!-- regular_user only -->
+            {% if user.role == 'regular_user' %}
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/app' }}" href="/cart">
+                    <span class="material-symbols-outlined me-2">?</span>
+                    Cart
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/app' }}" href="#">
                     <span class="material-symbols-outlined me-2">star</span>
                     My Reviews
                 </a>
             </li>
+            {% endif %}
             
             <!-- admin only -->
             {% if user.role == 'admin' %}
@@ -222,10 +232,26 @@
                 <span class="material-symbols-outlined md-dark">menu</span>
             </button>
 
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="fw-semibold">Welcome, {{user.username}}</span>
+            <div>
+                <span style="font-size:1.2rem; font-weight:800; color:#1b4332">🍽 Campus Eats</span>
+                <span style="font-size:.7rem; color:#6c757d; margin-left:8px">UWI St. Augustine</span>
             </div>
+
+            <div>
+                {% if user %}
+                    <span class="me-3 text-muted" style="font-size:.9rem">👤 {{ user.username }}</span>
+                    {% if user.role == 'admin' %}
+                        <a href="/admin" class="btn btn-sm btn-outline-success me-2">Admin</a>
+                    {% endif %}
+                    <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+                {% else %}
+                    <a href="/login" class="btn btn-sm btn-success me-2">Sign In</a>
+                    <a href="/register" class="btn btn-sm btn-outline-success">Register</a>
+                {% endif %}
+            </div>
+
         </nav>
+        
         
         <div class="row">
             <div class="col-12">

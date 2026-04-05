@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+{% extends "authenticated-base.html" %}
 
-{% block internal_css %}
+{% block additional_styles %}
 <style>
     body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
     .back-btn { color: #2d6a4f; font-weight: 600; text-decoration: none; }
@@ -25,21 +25,8 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block subpage_content %}
 <div class="container py-4" style="max-width:860px">
-
-    <div class="navbar-top">
-        <a href="/app" class="back-btn">← Back to Food Spots</a>
-        <div>
-            {% if user %}
-                <span class="me-3 text-muted" style="font-size:.9rem">👤 {{ user.username }}</span>
-                <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
-            {% else %}
-                <a href="/login" class="btn btn-sm btn-success me-2">Sign In</a>
-                <a href="/register" class="btn btn-sm btn-outline-success">Register</a>
-            {% endif %}
-        </div>
-    </div>
 
     {% for message in get_flashed_messages(request) %}
         <div class="alert alert-{{ message.type }} rounded-3">{{ message.message }}</div>
@@ -75,6 +62,7 @@
                     <th>Description</th>
                     <th>Price</th>
                     <th>Availability</th>
+                    <th>Order</th>
                 </tr>
             </thead>
             <tbody>
@@ -89,6 +77,30 @@
                         {% else %}
                             <span class="badge bg-secondary">Unavailable</span>
                         {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="/order/add/{{ item.id }}" class="d-flex align-items-center gap-2">
+    
+                            <input 
+                                type="number" 
+                                name="quantity" 
+                                value="1" 
+                                min="1" 
+                                class="form-control form-control-sm" 
+                                style="width:70px; border-radius:8px;"
+                            >
+
+                            {% if item.is_available %}
+                                <button type="submit" class="btn btn-sm btn-success" style="border-radius:8px;">
+                                    Order
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-sm btn-secondary" disabled style="border-radius:8px;">
+                                    Unavailable
+                                </button>
+                            {% endif %}
+
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

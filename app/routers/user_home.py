@@ -6,6 +6,8 @@ from app.models.restaurant import Restaurant
 from app.models.menu import MenuItem
 from app.models.review import Review
 from app.models.user import User
+from app.models.order import Order
+from app.models.order_item import OrderItem
 from app.dependencies.session import SessionDep
 from app.dependencies.auth import AuthDep, OptionalUser
 from app.utilities.flash import flash
@@ -173,3 +175,113 @@ async def view_map(
             "restaurant": restaurant
         }
     )
+
+
+@router.post("/order/add/{menu_item_id}")
+async def add_to_order(
+    request: Request,
+    menu_item_id: int,
+    user: AuthDep,
+    db: SessionDep,
+    quantity: int = Form(...)
+):
+    menu_item = db.get(MenuItem, menu_item_id)
+    if not menu_item:
+        raise HTTPException(status_code=404, detail="Menu item not found")
+
+    order = db.exec(
+        select(Order).where(
+            Order.user_id == user.id,
+            Order.status == "pending"  
+        )
+    ).first()
+
+    if not order:
+        order = Order(
+            user_id=user.id,
+            status="pending"
+        )
+        db.add(order)
+        db.commit()
+        db.refresh(order)
+
+    order_item = OrderItem(
+        order_id=order.id,
+        menu_item_id=menu_item.id,
+        quantity=quantity,
+        price=menu_item.price  # snapshot price
+    )
+
+    db.add(order_item)
+    db.commit()
+
+    flash(request, f"{menu_item.name} added to order!", "success")
+
+    return RedirectResponse(
+        url=request.url_for("restaurant_menu", restaurant_id=menu_item.restaurant_id),
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+
+@router.get("/cart", response_class=HTMLResponse)
+async def view_cart(
+    request: Request,
+    user: AuthDep,
+    db: SessionDep
+):
+    order = db.exec(
+        select(Order).where(
+            Order.user_id == user.id,
+            Order.status == "pending"
+        )
+    ).first()
+
+    order_items = []
+    total = 0
+
+    if order:
+        items = db.exec(
+            select(OrderItem).where(OrderItem.order_id == order.id)
+        ).all()
+
+        for item in items:
+            menu_item = db.get(MenuItem, item.menu_item_id)
+            subtotal = item.quantity * item.price
+            total += subtotal
+
+            order_items.append({
+                "name": menu_item.name if menu_item else "Unknown",
+                "quantity": item.quantity,
+                "price": item.price,
+                "subtotal": subtotal
+            })
+
+    return templates.TemplateResponse(
+        request=request,
+        name="cart.html",
+        context={
+            "user": user,
+            "items": order_items,
+            "total": total
+        }
+    )
+
+@router.post("/order/checkout")
+async def checkout(
+    user: AuthDep,
+    db: SessionDep
+):
+    order = db.exec(
+        select(Order).where(
+            Order.user_id == user.id,
+            Order.status == "pending"
+        )
+    ).first()
+
+    if not order:
+        raise HTTPException(status_code=400, detail="No active order")
+
+    order.status = "placed"
+    db.add(order)
+    db.commit()
+
+    return RedirectResponse("/cart", status_code=303)

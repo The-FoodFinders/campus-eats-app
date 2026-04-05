@@ -11,8 +11,6 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.database import create_db_and_tables
     create_db_and_tables()
-    from seed import seed
-    seed()
     yield
 
 
