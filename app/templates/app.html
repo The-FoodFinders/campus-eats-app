@@ -1,119 +1,81 @@
-{% extends "authenticated-base.html" %}
+{% extends "base.html" %}
 
-{% block external_js %}
-<script src="{{ url_for('static', path='js/app.js')}}"></script>
-{% endblock %}
-
-{% block additional_styles %}
+{% block internal_css %}
 <style>
-    .welcome-banner {
-        background: linear-gradient(135deg, #d8f3dc, #b7e4c7);
-        border-radius: 24px;
-        padding: 32px;
-        margin-bottom: 32px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .welcome-banner::before {
-        position: absolute;
-        bottom: -10px;
-        right: -10px;
-        font-size: 80px;
-        opacity: 0.2;
-    }
-    
-    .section-title {
-        color: #1b4332;
-        font-weight: 700;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .section-title .material-symbols-outlined {
-        font-size: 28px;
-        color: #52b788;
-    }
-    
-    .user-table {
-        background: white;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-    
-    .user-table thead {
-        background: linear-gradient(135deg, #2d6a4f, #52b788);
-        color: white;
-    }
-    
-    .user-table th {
-        padding: 16px;
-        font-weight: 600;
-        border: none;
-    }
-    
-    .user-table td {
-        padding: 12px 16px;
-        vertical-align: middle;
-    }
-    
-    .user-table tbody tr:hover {
-        background: #d8f3dc;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 48px;
-        background: white;
-        border-radius: 24px;
-    }
-    
-    .empty-state .material-symbols-outlined {
-        font-size: 64px;
-        color: #b7e4c7;
-    }
+    body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
+    .navbar-top { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 12px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+    .page-title { color: #1b4332; font-weight: 800; margin-bottom: 4px; }
+    .place-card { background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.2s; overflow: hidden; }
+    .place-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
+    .place-card-body { padding: 18px; }
+    .place-card-body h5 { color: #1b4332; font-weight: 700; margin-bottom: 4px; }
+    .place-card-body p { font-size: .85rem; color: #6c757d; margin-bottom: 8px; }
+    .place-card-body a { color: #2d6a4f; font-weight: 600; font-size:.88rem; text-decoration:none; }
+    .place-card-body a:hover { text-decoration: underline; }
+    .search-bar { max-width: 400px; }
+    .search-bar input { border-radius: 12px 0 0 12px; border: 1.5px solid #b7e4c7; }
+    .search-bar button { border-radius: 0 12px 12px 0; background: #2d6a4f; border: none; color: white; }
 </style>
 {% endblock %}
 
-{% block subpage_content %}
+{% block content %}
+<div class="container py-4" style="max-width:960px">
 
-    <div class="container" id="content">
-        <div class="row">
-            <p>
-                This is table is rendered...
-            </p>
+    <div class="navbar-top">
+        <div>
+            <span style="font-size:1.2rem; font-weight:800; color:#1b4332">🍽 Campus Eats</span>
+            <span style="font-size:.7rem; color:#6c757d; margin-left:8px">UWI St. Augustine</span>
         </div>
-        <div class="row">
-            <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Restaurant</th>
-                    <th>Description</th>
-                    <th>Location</th>
-                  </tr>
-                </thead>
-                <tbody>
-                    {% for r in restaurants %}
-                    <tr onclick="window.location.href='/restaurant/{{ r.id }}'" style="cursor: pointer;">
-                        <td>
-                            <a href="/restaurant/{{ r.id }}" class="text-decoration-none">
-                                {{ r.name }}
-                            </a>
-                        </td>
-                        <td>{{ r.description }}</td>
-                        <td>
-                            <a href="/map/{{ r.id }}">
-                                {{ r.location }}
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                <tbody>
-            </table>
+        <div>
+            {% if user %}
+                <span class="me-3 text-muted" style="font-size:.9rem">👤 {{ user.username }}</span>
+                {% if user.role == 'admin' %}
+                    <a href="/admin" class="btn btn-sm btn-outline-success me-2">Admin</a>
+                {% endif %}
+                <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+            {% else %}
+                <a href="/login" class="btn btn-sm btn-success me-2">Sign In</a>
+                <a href="/register" class="btn btn-sm btn-outline-success">Register</a>
+            {% endif %}
         </div>
     </div>
 
+    {% for message in get_flashed_messages(request) %}
+        <div class="alert alert-{{ message.type }} rounded-3">{{ message.message }}</div>
+    {% endfor %}
+
+    <div class="mb-4">
+        <h2 class="page-title">Campus Food Spots</h2>
+        <p class="text-muted">Discover food places on UWI St. Augustine campus</p>
+        <form method="GET" action="/app" class="d-flex search-bar mt-3">
+            <input type="text" name="search" class="form-control" placeholder="Search places..."
+                value="{{ request.query_params.get('search', '') }}">
+            <button type="submit" class="btn px-3">🔍</button>
+        </form>
+    </div>
+
+    {% if restaurants %}
+    <div class="row g-3">
+        {% for r in restaurants %}
+        <div class="col-md-4 col-sm-6">
+            <div class="place-card h-100">
+                <div class="place-card-body">
+                    <h5>{{ r.name }}</h5>
+                    <p>{{ r.description or 'No description available.' }}</p>
+                    <p>📍 <a href="/map/{{ r.id }}">{{ r.location }}</a></p>
+                    <a href="/restaurant/{{ r.id }}" class="btn btn-sm btn-success w-100 mt-1"
+                        style="border-radius:10px">View Menu & Reviews →</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <p style="font-size:3rem">🍽</p>
+        <h5 class="text-muted">No food places found</h5>
+    </div>
+    {% endif %}
+
+</div>
 {% endblock %}

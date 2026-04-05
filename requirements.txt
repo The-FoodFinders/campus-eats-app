@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlmodel
+passlib
+python-jose
+jinja2
+python-multipart
+pyjwt
+email-validator
+itsdangerous
+python-dotenv
+pydantic-settings
+bcrypt
+pwdlib[argon2]

@@ -1,24 +1,26 @@
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi import status
+from fastapi import status, Form
 from sqlmodel import select
 from app.models.restaurant import Restaurant
 from app.models.menu import MenuItem
+from app.models.review import Review
+from app.models.user import User
 from app.dependencies.session import SessionDep
-from app.dependencies.auth import AuthDep, IsUserLoggedIn, get_current_user, is_admin
+from app.dependencies.auth import AuthDep, OptionalUser
+from app.utilities.flash import flash
 from . import router, templates
 
 
 @router.get("/app", response_class=HTMLResponse)
 async def user_home_view(
     request: Request,
-    user: AuthDep,
-    db:SessionDep
+    user: OptionalUser,
+    db: SessionDep
 ):
     restaurants = db.exec(select(Restaurant)).all()
-
     return templates.TemplateResponse(
-        request=request, 
+        request=request,
         name="app.html",
         context={
             "user": user,
@@ -26,18 +28,49 @@ async def user_home_view(
         }
     )
 
+
 @router.get("/restaurant/{restaurant_id}", response_class=HTMLResponse)
 async def restaurant_menu(
     request: Request,
     restaurant_id: int,
-    user: AuthDep,
+    user: OptionalUser,
     db: SessionDep
 ):
     restaurant = db.get(Restaurant, restaurant_id)
+    if not restaurant:
+        raise HTTPException(status_code=404, detail="Restaurant not found")
 
     menu_items = db.exec(
         select(MenuItem).where(MenuItem.restaurant_id == restaurant_id)
     ).all()
+
+    reviews_raw = db.exec(
+        select(Review).where(Review.restaurant_id == restaurant_id)
+    ).all()
+
+    reviews = []
+    for r in reviews_raw:
+        u = db.get(User, r.user_id)
+        reviews.append({
+            "id": r.id,
+            "rating": r.rating,
+            "comment": r.comment,
+            "created_at": r.created_at,
+            "username": u.username if u else "Unknown",
+            "user_id": r.user_id
+        })
+
+    avg_rating = round(sum(r["rating"] for r in reviews) / len(reviews), 1) if reviews else None
+
+    user_already_reviewed = False
+    if user:
+        existing = db.exec(
+            select(Review).where(
+                Review.restaurant_id == restaurant_id,
+                Review.user_id == user.id
+            )
+        ).first()
+        user_already_reviewed = existing is not None
 
     return templates.TemplateResponse(
         request=request,
@@ -45,19 +78,90 @@ async def restaurant_menu(
         context={
             "user": user,
             "restaurant": restaurant,
-            "menu_items": menu_items
+            "menu_items": menu_items,
+            "reviews": reviews,
+            "avg_rating": avg_rating,
+            "user_already_reviewed": user_already_reviewed
         }
     )
+
+
+@router.post("/restaurant/{restaurant_id}/review", response_class=HTMLResponse)
+async def submit_review(
+    request: Request,
+    restaurant_id: int,
+    user: AuthDep,
+    db: SessionDep,
+    rating: int = Form(),
+    comment: str = Form(default="")
+):
+    existing = db.exec(
+        select(Review).where(
+            Review.restaurant_id == restaurant_id,
+            Review.user_id == user.id
+        )
+    ).first()
+
+    if existing:
+        flash(request, "You have already reviewed this place.", "danger")
+        return RedirectResponse(
+            url=request.url_for("restaurant_menu", restaurant_id=restaurant_id),
+            status_code=status.HTTP_303_SEE_OTHER
+        )
+
+    if not (1 <= rating <= 5):
+        flash(request, "Rating must be between 1 and 5.", "danger")
+        return RedirectResponse(
+            url=request.url_for("restaurant_menu", restaurant_id=restaurant_id),
+            status_code=status.HTTP_303_SEE_OTHER
+        )
+
+    review = Review(
+        restaurant_id=restaurant_id,
+        user_id=user.id,
+        rating=rating,
+        comment=comment
+    )
+    db.add(review)
+    db.commit()
+
+    flash(request, "Review submitted successfully!", "success")
+    return RedirectResponse(
+        url=request.url_for("restaurant_menu", restaurant_id=restaurant_id),
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+
+
+@router.post("/restaurant/{restaurant_id}/review/{review_id}/delete")
+async def delete_review(
+    request: Request,
+    restaurant_id: int,
+    review_id: int,
+    user: AuthDep,
+    db: SessionDep
+):
+    review = db.get(Review, review_id)
+    if not review or (review.user_id != user.id and user.role != "admin"):
+        flash(request, "Not authorized to delete this review.", "danger")
+    else:
+        db.delete(review)
+        db.commit()
+        flash(request, "Review deleted.", "success")
+
+    return RedirectResponse(
+        url=request.url_for("restaurant_menu", restaurant_id=restaurant_id),
+        status_code=status.HTTP_303_SEE_OTHER
+    )
+
 
 @router.get("/map/{restaurant_id}", response_class=HTMLResponse)
 async def view_map(
     request: Request,
     restaurant_id: int,
-    user: AuthDep,
+    user: OptionalUser,
     db: SessionDep
 ):
     restaurant = db.get(Restaurant, restaurant_id)
-
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
 

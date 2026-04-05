@@ -1,100 +1,74 @@
-{% extends "authenticated-base.html" %}
+{% extends "base.html" %}
 
-{% block external_js %}
-<script src="{{ url_for('static', path='js/app.js')}}"></script>
-{% endblock %}
-
-{% block additional_styles %}
+{% block internal_css %}
 <style>
-    .welcome-banner {
-        background: linear-gradient(135deg, #d8f3dc, #b7e4c7);
-        border-radius: 24px;
-        padding: 32px;
-        margin-bottom: 32px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .welcome-banner::before {
-        position: absolute;
-        bottom: -10px;
-        right: -10px;
-        font-size: 80px;
-        opacity: 0.2;
-    }
-    
-    .section-title {
-        color: #1b4332;
-        font-weight: 700;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .section-title .material-symbols-outlined {
-        font-size: 28px;
-        color: #52b788;
-    }
-    
-    .user-table {
-        background: white;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-    }
-    
-    .user-table thead {
-        background: linear-gradient(135deg, #2d6a4f, #52b788);
-        color: white;
-    }
-    
-    .user-table th {
-        padding: 16px;
-        font-weight: 600;
-        border: none;
-    }
-    
-    .user-table td {
-        padding: 12px 16px;
-        vertical-align: middle;
-    }
-    
-    .user-table tbody tr:hover {
-        background: #d8f3dc;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 48px;
-        background: white;
-        border-radius: 24px;
-    }
-    
-    .empty-state .material-symbols-outlined {
-        font-size: 64px;
-        color: #b7e4c7;
-    }
+    body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
+    .back-btn { color: #2d6a4f; font-weight: 600; text-decoration: none; }
+    .back-btn:hover { color: #1b4332; }
+    .section-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 24px; }
+    .section-card h4 { color: #1b4332; font-weight: 700; margin-bottom: 16px; }
+    .menu-table thead { background: linear-gradient(135deg, #2d6a4f, #52b788); color: white; }
+    .menu-table th, .menu-table td { padding: 12px 16px; vertical-align: middle; }
+    .menu-table tbody tr:hover { background: #d8f3dc; }
+    .star { color: #f4a900; font-size: 1.1rem; }
+    .star-empty { color: #ccc; font-size: 1.1rem; }
+    .review-card { border-left: 4px solid #52b788; padding: 14px 16px; background: #f8fffe; border-radius: 10px; margin-bottom: 12px; }
+    .review-card .reviewer { font-weight: 600; color: #1b4332; }
+    .review-card .date { font-size: 0.78rem; color: #6c757d; }
+    .avg-badge { background: #52b788; color: white; border-radius: 12px; padding: 6px 16px; font-size: 1rem; font-weight: 700; }
+    .star-selector label { font-size: 1.8rem; color: #ccc; cursor: pointer; transition: color 0.15s; }
+    .star-selector input:checked ~ label,
+    .star-selector label:hover,
+    .star-selector label:hover ~ label { color: #f4a900; }
+    .star-selector { display: flex; flex-direction: row-reverse; justify-content: flex-end; }
+    .navbar-top { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 12px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
 </style>
 {% endblock %}
 
-{% block subpage_content %}
+{% block content %}
+<div class="container py-4" style="max-width:860px">
 
-<div class="container" id="content">
-
-    <div class="row mb-3">
-        <h2>{{ restaurant.name }}</h2>
-        <p>{{ restaurant.description }}</p>
-        <p><strong>Location:</strong> 
-            <a href="/map/{{ restaurant.id }}">
-                {{ restaurant.location }}
-            </a>
-        </p>
+    <div class="navbar-top">
+        <a href="/app" class="back-btn">← Back to Food Spots</a>
+        <div>
+            {% if user %}
+                <span class="me-3 text-muted" style="font-size:.9rem">👤 {{ user.username }}</span>
+                <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+            {% else %}
+                <a href="/login" class="btn btn-sm btn-success me-2">Sign In</a>
+                <a href="/register" class="btn btn-sm btn-outline-success">Register</a>
+            {% endif %}
+        </div>
     </div>
 
-    <div class="row">
-        <h4>Menu</h4>
-        <table class="table table-striped">
+    {% for message in get_flashed_messages(request) %}
+        <div class="alert alert-{{ message.type }} rounded-3">{{ message.message }}</div>
+    {% endfor %}
+
+    <div class="section-card">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <h2 class="fw-bold" style="color:#1b4332">{{ restaurant.name }}</h2>
+                <p class="text-muted mb-1">{{ restaurant.description }}</p>
+                <p class="mb-0">
+                    📍 <a href="/map/{{ restaurant.id }}" style="color:#2d6a4f; font-weight:500">
+                        {{ restaurant.location }}
+                    </a>
+                </p>
+            </div>
+            {% if avg_rating %}
+            <div class="text-center">
+                <span class="avg-badge">★ {{ avg_rating }}</span>
+                <div class="text-muted mt-1" style="font-size:.78rem">{{ reviews|length }} review{{ 's' if reviews|length != 1 }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h4>🍽 Menu</h4>
+        {% if menu_items %}
+        <table class="table menu-table rounded-3 overflow-hidden">
             <thead>
                 <tr>
                     <th>Item</th>
@@ -103,26 +77,99 @@
                     <th>Availability</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for item in menu_items %}
                 <tr>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.description }}</td>
-                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td><strong>{{ item.name }}</strong></td>
+                    <td>{{ item.description or '—' }}</td>
+                    <td>TTD ${{ "%.2f"|format(item.price) }}</td>
                     <td>
                         {% if item.is_available %}
-                            Available
+                            <span class="badge bg-success">Available</span>
                         {% else %}
-                            Unavailable
+                            <span class="badge bg-secondary">Unavailable</span>
                         {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+            <p class="text-muted">No menu items listed yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="section-card">
+        <h4>⭐ Reviews</h4>
+
+        {% if reviews %}
+            {% for r in reviews %}
+            <div class="review-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <span class="reviewer">{{ r.username }}</span>
+                        <span class="date ms-2">{{ r.created_at.strftime('%d %b %Y') }}</span>
+                        <div>
+                            {% for i in range(1, 6) %}
+                                {% if i <= r.rating %}
+                                    <span class="star">★</span>
+                                {% else %}
+                                    <span class="star-empty">★</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if user and (user.id == r.user_id or user.role == 'admin') %}
+                    <form method="POST" action="/restaurant/{{ restaurant.id }}/review/{{ r.id }}/delete">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% if r.comment %}
+                    <p class="mt-2 mb-0 text-muted">{{ r.comment }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted">No reviews yet. Be the first!</p>
+        {% endif %}
+
+        <div class="mt-4">
+            {% if not user %}
+                <div class="alert alert-info rounded-3">
+                    <a href="/login" style="color:#0c5460; font-weight:600">Sign in</a> or
+                    <a href="/register" style="color:#0c5460; font-weight:600">register</a>
+                    to leave a review.
+                </div>
+            {% elif user_already_reviewed %}
+                <div class="alert alert-secondary rounded-3">
+                    You have already reviewed this place.
+                </div>
+            {% else %}
+                <h5 style="color:#1b4332; font-weight:700">Leave a Review</h5>
+                <form method="POST" action="/restaurant/{{ restaurant.id }}/review">
+                    <div class="mb-3">
+                        <label class="form-label fw-600">Rating</label>
+                        <div class="star-selector">
+                            {% for i in [5,4,3,2,1] %}
+                            <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" style="display:none" required>
+                            <label for="star{{ i }}" title="{{ i }} star{{ 's' if i != 1 }}">★</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Comment (optional)</label>
+                        <textarea name="comment" class="form-control" rows="3"
+                            placeholder="Share your experience..." style="border-radius:12px"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success px-4" style="border-radius:12px">
+                        Submit Review
+                    </button>
+                </form>
+            {% endif %}
+        </div>
     </div>
 
 </div>
-
 {% endblock %}
+ 
