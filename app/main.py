@@ -11,15 +11,16 @@ from contextlib import asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.database import create_db_and_tables
     create_db_and_tables()
+    from seed import seed
+    seed()
     yield
-
 
 
 app = FastAPI(middleware=[
     Middleware(SessionMiddleware, secret_key=get_settings().secret_key)
 ],
     lifespan=lifespan
-)   
+)
 
 app.include_router(router)
 app.include_router(api_router)
@@ -28,7 +29,7 @@ app.mount("/static", static_files, name="static")
 @app.exception_handler(status.HTTP_401_UNAUTHORIZED)
 async def unauthorized_redirect_handler(request: Request, exc: Exception):
     return templates.TemplateResponse(
-        request=request, 
+        request=request,
         name="401.html",
     )
 
