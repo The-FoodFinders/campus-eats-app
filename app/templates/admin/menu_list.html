@@ -1,0 +1,39 @@
+{% extends "authenticated-base.html" %}
+
+{% block subpage_content %}
+<div class="container py-4">
+    <h2 class="text-success">{{ place.name }} - Menu</h2>
+    <a href="{{ url_for('admin_menu_new_form', place_id=place.id) }}" class="btn btn-success mb-3">+ Add Menu Item</a>
+
+    {% if menu_items %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Description</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu_items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>TTD {{ "%.2f"|format(item.price) }}</td>
+                <td>{{ item.description or '-' }}</td>
+                <td>
+                    {% if item.is_available %}
+                        <span class="badge bg-success">Yes</span>
+                    {% else %}
+                        <span class="badge bg-secondary">No</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-muted">No menu items yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

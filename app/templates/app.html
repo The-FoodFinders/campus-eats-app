@@ -2,118 +2,101 @@
 
 {% block additional_styles %}
 <style>
-    body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
-    .navbar-top { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 12px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .page-title { color: #1b4332; font-weight: 800; margin-bottom: 4px; }
-    .place-card { background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.2s; overflow: hidden; }
-    .place-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
-    .place-card-body { padding: 18px; }
-    .place-card-body h5 { color: #1b4332; font-weight: 700; margin-bottom: 4px; }
-    .place-card-body p { font-size: .85rem; color: #6c757d; margin-bottom: 8px; }
-    .place-card-body a { color: #2d6a4f; font-weight: 600; font-size:.88rem; text-decoration:none; }
-    .place-card-body a:hover { text-decoration: underline; }
-    .search-bar { max-width: 400px; }
-    .search-bar input { border-radius: 12px 0 0 12px; border: 1.5px solid #b7e4c7; }
-    .search-bar button { border-radius: 0 12px 12px 0; background: #2d6a4f; border: none; color: white; }
+    .place-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+        transition: all 0.3s ease;
+        overflow: hidden;
+        height: 100%;
+    }
+    .place-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    }
+    .place-card-body {
+        padding: 24px;
+    }
+    .place-card-body h5 {
+        color: #1b4332;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .place-card-body p {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    .location-link {
+        color: #2d6a4f;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .location-link:hover {
+        text-decoration: underline;
+    }
+    .search-bar input {
+        border-radius: 12px 0 0 12px;
+        border: 2px solid #b7e4c7;
+    }
+    .search-bar button {
+        border-radius: 0 12px 12px 0;
+        background: #2d6a4f;
+    }
 </style>
 {% endblock %}
 
 {% block subpage_content %}
-<main>
-<div class="container py-4" style="max-width:960px">
+<div class="container py-4" style="max-width: 1100px">
 
     {% for message in get_flashed_messages(request) %}
-        <div class="alert alert-{{ message.type }} rounded-3">{{ message.message }}</div>
+        <div class="alert alert-{{ message.type }}">{{ message.message }}</div>
     {% endfor %}
 
-    <div class="mb-4">
-        <h2 class="page-title">Campus Food Spots</h2>
-        <p class="text-muted">Discover food places on UWI St. Augustine campus</p>
-        <form method="GET" action="/app" class="d-flex search-bar mt-3">
-            <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search places..."
-                value="{{ request.query_params.get('search', '') }}">
-            <button type="submit" class="btn px-3">🔍</button>
-        </form>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-success fw-bold">UWI Food Spots</h2>
+        </div>
+        <a href="/map" class="btn btn-success">Open Campus Map 📍</a>
     </div>
-    <div id="resultsContainer">
-        {% if restaurants %}
-        <div class="row g-3">
-            {% for r in restaurants %}
-            <div class="col-md-4 col-sm-6">
-                <div class="place-card h-100">
-                    <div class="place-card-body">
-                        <h5>{{ r.name }}</h5>
-                        <p>{{ r.description or 'No description available.' }}</p>
-                        <p>📍 <a href="/map/{{ r.id }}">{{ r.location }}</a></p>
-                        <a href="/restaurant/{{ r.id }}" class="btn btn-sm btn-success w-100 mt-1"
-                            style="border-radius:10px">View Menu & Reviews →</a>
-                    </div>
+
+    <form method="GET" action="/app" class="d-flex search-bar mb-4">
+        <input type="text" name="search" class="form-control" placeholder="Search food places..." 
+               value="{{ request.query_params.get('search', '') }}">
+        <button type="submit" class="btn px-4">
+            <span class="material-symbols-outlined">search</span>
+        </button>
+    </form>
+    
+    <br>
+
+    <div class="row g-4">
+        {% for r in restaurants %}
+        <div class="col-md-6 col-lg-4">
+            <div class="place-card h-100">
+                <div class="place-card-body">
+                    <h5>{{ r.name }}</h5>
+                    <p>{{ r.description|truncate(110) or 'No description available.' }}</p>
+                    <p class="mb-0">
+                        📍 <a href="/map/{{ r.id }}" class="location-link">{{ r.location }}</a>
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0 pb-4 px-4">
+                    <a href="/restaurant/{{ r.id }}" class="btn btn-success w-100 py-2">
+                        View Menu & Reviews →
+                    </a>
                 </div>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="text-center py-5">
-            <p style="font-size:3rem">🍽</p>
-            <h5 class="text-muted">No food places found</h5>
-        </div>
-        {% endif %}
+        {% endfor %}
     </div>
+
+    {% if not restaurants %}
+    <div class="text-center py-5">
+        <p style="font-size: 4rem; opacity: 0.4;">🍽</p>
+        <h5 class="text-muted">No food places found</h5>
+    </div>
+    {% endif %}
+
 </div>
-</main>
-
-<script>
-const input = document.getElementById("searchInput");
-const container = document.getElementById("resultsContainer");
-
-let timeout = null;
-
-input.addEventListener("input", () => {
-    clearTimeout(timeout);
-
-    timeout = setTimeout(async () => {
-        const value = input.value;
-
-        const res = await fetch(`/search-restaurants?search=${value}`);
-        const data = await res.json();
-
-        container.innerHTML = "";
-
-        if (data.length === 0) {
-            container.innerHTML = `
-                <div class="text-center py-5">
-                    <p style="font-size:3rem">🍽</p>
-                    <h5 class="text-muted">No food places found</h5>
-                </div>
-            `;
-            return;
-        }
-
-        let html = `<div class="row g-3">`;
-
-        data.forEach(r => {
-            html += `
-                <div class="col-md-4 col-sm-6">
-                    <div class="place-card h-100">
-                        <div class="place-card-body">
-                            <h5>${r.name}</h5>
-                            <p>${r.description || 'No description available.'}</p>
-                            <p>📍 <a href="/map/${r.id}">${r.location}</a></p>
-                            <a href="/restaurant/${r.id}" 
-                               class="btn btn-sm btn-success w-100 mt-1"
-                               style="border-radius:10px">
-                               View Menu & Reviews →
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-        html += `</div>`;
-        container.innerHTML = html;
-
-    }, 300);
-});
-</script>
 {% endblock %}

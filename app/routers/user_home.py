@@ -264,33 +264,44 @@ async def view_cart(
         )
     ).first()
 
-    order_items = []
-    total = 0
+    items_by_place = {}
+    grand_total = 0.0
 
     if order:
-        items = db.exec(
+        order_items = db.exec(
             select(OrderItem).where(OrderItem.order_id == order.id)
         ).all()
 
-        for item in items:
+        for item in order_items:
             menu_item = db.get(MenuItem, item.menu_item_id)
-            subtotal = item.quantity * item.price
-            total += subtotal
+            if not menu_item:
+                continue
 
-            order_items.append({
-                "name": menu_item.name if menu_item else "Unknown",
+            restaurant = db.get(Restaurant, menu_item.restaurant_id)
+            place_name = restaurant.name if restaurant else "Unknown Place"
+
+            if place_name not in items_by_place:
+                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}  # Changed from "items" to "cart_items"
+
+            subtotal = item.quantity * item.price
+
+            items_by_place[place_name]["cart_items"].append({  # Changed here
+                "name": menu_item.name,
                 "quantity": item.quantity,
                 "price": item.price,
                 "subtotal": subtotal
             })
+
+            items_by_place[place_name]["subtotal"] += subtotal
+            grand_total += subtotal
 
     return templates.TemplateResponse(
         request=request,
         name="cart.html",
         context={
             "user": user,
-            "items": order_items,
-            "total": total
+            "items_by_place": items_by_place,
+            "grand_total": grand_total
         }
     )
 
@@ -314,3 +325,45 @@ async def checkout(
     db.commit()
 
     return RedirectResponse("/cart", status_code=303)
+
+@router.get("/map", response_class=HTMLResponse)
+async def campus_map_view(
+    request: Request,
+    user: OptionalUser,
+    db: SessionDep
+):
+    restaurants = db.exec(select(Restaurant)).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="map.html",
+        context={"user": user, "restaurants": restaurants}
+    )
+
+@router.post("/cart/clear")
+async def clear_cart(
+    user: AuthDep,
+    db: SessionDep
+):
+    # Get the user's pending order
+    order = db.exec(
+        select(Order).where(
+            Order.user_id == user.id,
+            Order.status == "pending"
+        )
+    ).first()
+    
+    if order:
+        # Delete all order items for this order
+        order_items = db.exec(
+            select(OrderItem).where(OrderItem.order_id == order.id)
+        ).all()
+        
+        for item in order_items:
+            db.delete(item)
+        
+        # Delete the order itself
+        db.delete(order)
+        db.commit()
+    
+    # Return JSON response for AJAX call
+    return JSONResponse({"success": True, "message": "Cart cleared successfully"})

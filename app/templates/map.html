@@ -2,50 +2,100 @@
 
 {% block internal_css %}
 <style>
-    body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
-    .navbar-top { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 12px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
-    .back-btn { color: #2d6a4f; font-weight: 600; text-decoration: none; }
-    .map-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-    #map { height: 500px; border-radius: 14px; overflow: hidden; }
+    body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); }
+    .map-container {
+        background: white;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+    #map { height: 620px; border-radius: 16px; }
+    .custom-green-pin {
+        background: none;
+        border: none;
+        font-size: 34px;
+        text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+    }
+    .green-pin {
+        background: #2d6a4f;
+        width: 30px;
+        height: 30px;
+        border-radius: 50% 50% 50% 0;
+        display: block;
+        transform: rotate(-45deg);
+        box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    }
+    .green-pin::after {
+        content: '';
+        width: 12px;
+        height: 12px;
+        background: white;
+        position: absolute;
+        border-radius: 50%;
+        top: 9px;
+        left: 9px;
+        transform: rotate(45deg);
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4" style="max-width:900px">
-
-    <div class="navbar-top">
-        <a href="/restaurant/{{ restaurant.id }}" class="back-btn">← Back to Menu</a>
-        <div>
-            {% if user %}
-                <span class="me-3 text-muted" style="font-size:.9rem">👤 {{ user.username }}</span>
-                <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
-            {% else %}
-                <a href="/login" class="btn btn-sm btn-success me-2">Sign In</a>
-                <a href="/register" class="btn btn-sm btn-outline-success">Register</a>
-            {% endif %}
+<div class="container py-4">
+    <div class="map-container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 style="color:#1b4332">📍 UWI St. Augustine Campus Map</h4>
+            <a href="/app" class="btn btn-outline-success">← Back to Food Spots</a>
         </div>
-    </div>
-
-    <div class="map-card">
-        <h4 style="color:#1b4332; font-weight:700; margin-bottom:4px">📍 {{ restaurant.name }}</h4>
-        <p class="text-muted mb-3">{{ restaurant.location }}</p>
         <div id="map"></div>
     </div>
-
 </div>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    var lat = {{ restaurant.latitude }};
-    var lng = {{ restaurant.longitude }};
-    var map = L.map('map').setView([lat, lng], 17);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-    var marker = L.marker([lat, lng]).addTo(map);
-    marker.bindPopup("<b>{{ restaurant.name }}</b><br>{{ restaurant.location }}").openPopup();
-</script>
+    const map = L.map('map').setView([10.6424, -61.4005], 16);
 
+    L.tileLayer.wms('https://geoserver.sundaebytestt.com/geoserver/osm/wms', {
+        layers: 'osm:osm_nohouse',
+        format: 'image/png',
+        transparent: true,
+        version: '1.1.0'
+    }).addTo(map);
+
+    const greenPin = L.divIcon({
+        className: 'custom-green-pin',
+        html: '<div class="green-pin"></div>',
+        iconSize: [30, 42],
+        iconAnchor: [15, 42],
+        popupAnchor: [0, -35]
+    });
+
+    // You can make this dynamic later from DB
+    const places = [
+        {id:1, name:"Main Cafeteria", lat:10.6425, lng:-61.3990},
+        {id:2, name:"Engineering Canteen", lat:10.6430, lng:-61.4005},
+        {id:3, name:"Med Sci Canteen", lat:10.6415, lng:-61.3975},
+        {id:4, name:"Piazza Food Court", lat:10.6422, lng:-61.3985},
+    ];
+
+    places.forEach(p => {
+        L.marker([p.lat, p.lng], {icon: greenPin})
+         .bindPopup(`<b>${p.name}</b><br><a href="/restaurant/${p.id}" class="btn btn-sm btn-success mt-2">View Menu →</a>`)
+         .addTo(map);
+    });
+
+    // Find Me Button
+    const locateBtn = L.control({position: 'topright'});
+    locateBtn.onAdd = function() {
+        const div = L.DomUtil.create('div', 'leaflet-bar');
+        div.innerHTML = `<a id="locate-btn" href="#" title="Find Me">📍</a>`;
+        return div;
+    };
+    locateBtn.addTo(map);
+
+    document.getElementById('locate-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        map.locate({setView: true, maxZoom: 18});
+    });
+</script>
 {% endblock %}
