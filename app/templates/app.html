@@ -19,6 +19,7 @@
 {% endblock %}
 
 {% block subpage_content %}
+<main>
 <div class="container py-4" style="max-width:960px">
 
     {% for message in get_flashed_messages(request) %}
@@ -29,34 +30,90 @@
         <h2 class="page-title">Campus Food Spots</h2>
         <p class="text-muted">Discover food places on UWI St. Augustine campus</p>
         <form method="GET" action="/app" class="d-flex search-bar mt-3">
-            <input type="text" name="search" class="form-control" placeholder="Search places..."
+            <input type="text" id="searchInput" name="search" class="form-control" placeholder="Search places..."
                 value="{{ request.query_params.get('search', '') }}">
             <button type="submit" class="btn px-3">🔍</button>
         </form>
     </div>
-
-    {% if restaurants %}
-    <div class="row g-3">
-        {% for r in restaurants %}
-        <div class="col-md-4 col-sm-6">
-            <div class="place-card h-100">
-                <div class="place-card-body">
-                    <h5>{{ r.name }}</h5>
-                    <p>{{ r.description or 'No description available.' }}</p>
-                    <p>📍 <a href="/map/{{ r.id }}">{{ r.location }}</a></p>
-                    <a href="/restaurant/{{ r.id }}" class="btn btn-sm btn-success w-100 mt-1"
-                        style="border-radius:10px">View Menu & Reviews →</a>
+    <div id="resultsContainer">
+        {% if restaurants %}
+        <div class="row g-3">
+            {% for r in restaurants %}
+            <div class="col-md-4 col-sm-6">
+                <div class="place-card h-100">
+                    <div class="place-card-body">
+                        <h5>{{ r.name }}</h5>
+                        <p>{{ r.description or 'No description available.' }}</p>
+                        <p>📍 <a href="/map/{{ r.id }}">{{ r.location }}</a></p>
+                        <a href="/restaurant/{{ r.id }}" class="btn btn-sm btn-success w-100 mt-1"
+                            style="border-radius:10px">View Menu & Reviews →</a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <div class="text-center py-5">
+            <p style="font-size:3rem">🍽</p>
+            <h5 class="text-muted">No food places found</h5>
+        </div>
+        {% endif %}
     </div>
-    {% else %}
-    <div class="text-center py-5">
-        <p style="font-size:3rem">🍽</p>
-        <h5 class="text-muted">No food places found</h5>
-    </div>
-    {% endif %}
-
 </div>
+</main>
+
+<script>
+const input = document.getElementById("searchInput");
+const container = document.getElementById("resultsContainer");
+
+let timeout = null;
+
+input.addEventListener("input", () => {
+    clearTimeout(timeout);
+
+    timeout = setTimeout(async () => {
+        const value = input.value;
+
+        const res = await fetch(`/search-restaurants?search=${value}`);
+        const data = await res.json();
+
+        container.innerHTML = "";
+
+        if (data.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-5">
+                    <p style="font-size:3rem">🍽</p>
+                    <h5 class="text-muted">No food places found</h5>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `<div class="row g-3">`;
+
+        data.forEach(r => {
+            html += `
+                <div class="col-md-4 col-sm-6">
+                    <div class="place-card h-100">
+                        <div class="place-card-body">
+                            <h5>${r.name}</h5>
+                            <p>${r.description || 'No description available.'}</p>
+                            <p>📍 <a href="/map/${r.id}">${r.location}</a></p>
+                            <a href="/restaurant/${r.id}" 
+                               class="btn btn-sm btn-success w-100 mt-1"
+                               style="border-radius:10px">
+                               View Menu & Reviews →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+        container.innerHTML = html;
+
+    }, 300);
+});
+</script>
 {% endblock %}

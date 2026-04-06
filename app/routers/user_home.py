@@ -1,6 +1,6 @@
 from fastapi import HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi import status, Form
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi import status, Form, Query
 from sqlmodel import select
 from app.models.restaurant import Restaurant
 from app.models.menu import MenuItem
@@ -18,9 +18,16 @@ from . import router, templates
 async def user_home_view(
     request: Request,
     user: OptionalUser,
-    db: SessionDep
+    db: SessionDep,
+    search: str = Query(None)
 ):
-    restaurants = db.exec(select(Restaurant)).all()
+    query = select(Restaurant)
+
+    if search:
+        query = query.where(Restaurant.name.ilike(f"%{search}%"))
+
+    restaurants = db.exec(query).all()
+
     return templates.TemplateResponse(
         request=request,
         name="app.html",
@@ -29,6 +36,28 @@ async def user_home_view(
             "restaurants": restaurants
         }
     )
+
+@router.get("/search-restaurants")
+async def search_restaurants(
+    db: SessionDep,
+    search: str = ""
+):
+    query = select(Restaurant)
+
+    if search:
+        query = query.where(Restaurant.name.ilike(f"%{search}%"))
+
+    restaurants = db.exec(query).all()
+
+    return [
+        {
+            "id": r.id,
+            "name": r.name,
+            "description": r.description,
+            "location": r.location
+        }
+        for r in restaurants
+    ]
 
 
 @router.get("/restaurant/{restaurant_id}", response_class=HTMLResponse)
