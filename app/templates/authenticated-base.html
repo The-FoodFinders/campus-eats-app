@@ -124,6 +124,8 @@
             <div class="ms-auto d-flex align-items-center gap-3">
                 {% if user %}
                     <span class="fw-semibold">Welcome, {{ user.username }}</span>
+                {% else %}
+                    <span class="fw-semibold">Guest User</span>
                 {% endif %}
             </div>
         </nav>

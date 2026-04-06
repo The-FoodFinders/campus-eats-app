@@ -148,10 +148,12 @@
 
         <div class="mt-4">
             {% if not user %}
-                <div class="alert alert-info rounded-3">
-                    <a href="/login" style="color:#0c5460; font-weight:600">Sign in</a> or
-                    <a href="/register" style="color:#0c5460; font-weight:600">register</a>
-                    to leave a review.
+                <div class="alert alert-info rounded-3 text-center" style="background: #e8f5e9; border: 2px solid #52b788;">
+                    <h5 class="mt-2">Want to leave a review?</h5>
+                    <p>Sign up now to see what others are saying!</p>
+                    <a href="/register" class="btn btn-success">Sign Up Now →</a>
+                    <hr class="my-3">
+                    <p class="mb-0 small">Already have an account? <a href="/login">Login here</a></p>
                 </div>
             {% elif user_already_reviewed %}
                 <div class="alert alert-secondary rounded-3">
