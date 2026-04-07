@@ -43,6 +43,16 @@
         border-radius: 0 12px 12px 0;
         background: #2d6a4f;
     }
+    .category-btn {
+        border-radius: 20px !important;
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 5px 16px;
+        transition: all 0.2s ease;
+    }
+    .category-btn:hover {
+        transform: translateY(-2px);
+    }
 </style>
 {% endblock %}
 
@@ -60,15 +70,27 @@
         <a href="/map" class="btn btn-success">Open Campus Map 📍</a>
     </div>
 
-    <form method="GET" action="/app" class="d-flex search-bar mb-4">
-        <input type="text" name="search" class="form-control" placeholder="Search food places..." 
+    <form method="GET" action="/app" class="d-flex search-bar mb-3">
+        <input type="text" name="search" class="form-control" placeholder="Search food places..."
                value="{{ request.query_params.get('search', '') }}">
         <button type="submit" class="btn px-4">
             <span class="material-symbols-outlined">search</span>
         </button>
     </form>
-    
-    <br>
+
+    <!-- Category filter buttons — added by Dabria -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="/app"
+           class="btn btn-sm category-btn {{ 'btn-success' if not selected_category else 'btn-outline-success' }}">
+            All
+        </a>
+        {% for cat in categories %}
+        <a href="/app?category={{ cat }}"
+           class="btn btn-sm category-btn {{ 'btn-success' if selected_category == cat else 'btn-outline-success' }}">
+            {{ cat }}
+        </a>
+        {% endfor %}
+    </div>
 
     <div class="row g-4">
         {% for r in restaurants %}
@@ -76,6 +98,11 @@
             <div class="place-card h-100">
                 <div class="place-card-body">
                     <h5>{{ r.name }}</h5>
+                    {% if r.category %}
+                    <span class="badge mb-2" style="background:#d8f3dc; color:#1b4332; font-size:.75rem; border-radius:10px; padding:4px 10px;">
+                        {{ r.category }}
+                    </span>
+                    {% endif %}
                     <p>{{ r.description|truncate(110) or 'No description available.' }}</p>
                     <p class="mb-0">
                         📍 <a href="/map/{{ r.id }}" class="location-link">{{ r.location }}</a>

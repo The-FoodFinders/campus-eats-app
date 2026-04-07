@@ -19,21 +19,30 @@ async def user_home_view(
     request: Request,
     user: OptionalUser,
     db: SessionDep,
-    search: str = Query(None)
+    search: str = Query(None),
+    category: str = Query(None)
 ):
     query = select(Restaurant)
 
     if search:
         query = query.where(Restaurant.name.ilike(f"%{search}%"))
 
+    if category:
+        query = query.where(Restaurant.category == category)
+
     restaurants = db.exec(query).all()
+
+    all_restaurants = db.exec(select(Restaurant)).all()
+    categories = sorted(set(r.category for r in all_restaurants if r.category))
 
     return templates.TemplateResponse(
         request=request,
         name="app.html",
         context={
             "user": user,
-            "restaurants": restaurants
+            "restaurants": restaurants,
+            "categories": categories,
+            "selected_category": category,
         }
     )
 
