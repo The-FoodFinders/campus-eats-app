@@ -2,6 +2,10 @@
 
 {% block subpage_content %}
 <div class="container py-5" style="max-width: 700px;">
+    <a href="{{ url_for('admin_places_list') }}" class="btn btn-outline-success mb-3">
+        ← Back to Dashboard
+    </a>
+    
     <h2 class="text-success mb-4">
         {% if place %}Edit{% else %}Add New{% endif %} Food Place
     </h2>
