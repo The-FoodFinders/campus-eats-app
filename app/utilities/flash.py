@@ -8,4 +8,4 @@ def flash(request: Request, message: str, type: str = "success") -> None:
 
 
 def get_flashed_messages(request: Request):
-   return request.session.pop("_messages") if "_messages" in request.session else []
+    return request.session.pop("_messages") if "_messages" in request.session else []
