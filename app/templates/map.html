@@ -44,6 +44,7 @@
         background: #2d6a4f;
         color: white;
         padding: 8px 16px;
+        border-radius: 30px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         display: flex;
         align-items: center;
@@ -91,12 +92,16 @@
         popupAnchor: [0, -35]
     });
 
-    // You can make this dynamic later from DB
+    // Dynamic places from database (passed from backend)
     const places = [
-        {id:1, name:"Main Cafeteria", lat:10.6425, lng:-61.3990},
-        {id:2, name:"Engineering Canteen", lat:10.6430, lng:-61.4005},
-        {id:3, name:"Med Sci Canteen", lat:10.6415, lng:-61.3975},
-        {id:4, name:"Piazza Food Court", lat:10.6422, lng:-61.3985},
+        {% for r in restaurants %}
+        {
+            id: {{ r.id }},
+            name: "{{ r.name }}",
+            lat: {{ r.latitude }},
+            lng: {{ r.longitude }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
     ];
 
     places.forEach(p => {
@@ -105,7 +110,7 @@
          .addTo(map);
     });
 
-    // Find Me Button - longer version
+    // Find Me Button
     const locateBtn = L.control({position: 'topright'});
     locateBtn.onAdd = function() {
         const div = L.DomUtil.create('div', 'leaflet-bar');
