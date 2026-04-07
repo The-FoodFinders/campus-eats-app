@@ -3,7 +3,14 @@
 {% block additional_styles %}
 <style>
     body { background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 100%); min-height: 100vh; }
-    .back-btn { color: #2d6a4f; font-weight: 600; text-decoration: none; }
+    .back-btn { 
+        color: #2d6a4f; 
+        font-weight: 600; 
+        text-decoration: none; 
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
     .back-btn:hover { color: #1b4332; }
     .section-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 24px; }
     .section-card h4 { color: #1b4332; font-weight: 700; margin-bottom: 16px; }
@@ -21,7 +28,6 @@
     .star-selector label:hover,
     .star-selector label:hover ~ label { color: #f4a900; }
     .star-selector { display: flex; flex-direction: row-reverse; justify-content: flex-end; }
-    .navbar-top { background: white; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 12px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
 </style>
 {% endblock %}
 
@@ -35,6 +41,9 @@
     <div class="section-card">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
             <div>
+                <a href="/app" class="back-btn mb-2 d-inline-block">
+                    ← Back to Food Spots
+                </a>
                 <h2 class="fw-bold" style="color:#1b4332">{{ restaurant.name }}</h2>
                 <p class="text-muted mb-1">{{ restaurant.description }}</p>
                 <p class="mb-0">
@@ -80,7 +89,6 @@
                     </td>
                     <td>
                         <form method="post" action="/order/add/{{ item.id }}" class="d-flex align-items-center gap-2">
-    
                             <input 
                                 type="number" 
                                 name="quantity" 
@@ -89,7 +97,6 @@
                                 class="form-control form-control-sm" 
                                 style="width:70px; border-radius:8px;"
                             >
-
                             {% if item.is_available %}
                                 <button type="submit" class="btn btn-sm btn-success" style="border-radius:8px;">
                                     Order
@@ -99,7 +106,6 @@
                                     Unavailable
                                 </button>
                             {% endif %}
-
                         </form>
                     </td>
                 </tr>
@@ -186,4 +192,3 @@
 
 </div>
 {% endblock %}
- 

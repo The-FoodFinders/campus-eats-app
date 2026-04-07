@@ -45,6 +45,18 @@
         background: #dc3545;
         color: white;
     }
+    .place-phone {
+        font-size: 0.9rem;
+        color: #2d6a4f;
+        margin-top: 8px;
+        font-weight: 500;
+    }
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        padding: 4px 8px;
+        margin: 0 4px;
+    }
 </style>
 {% endblock %}
 
@@ -61,32 +73,47 @@
         {% for place_name, data in items_by_place.items() %}
         <div class="cart-section">
             <h5 class="place-header">{{ place_name }}</h5>
+            
+            <!-- Real phone number from Restaurant model -->
+            <div class="place-phone">
+                📞 Call to order: 
+                <strong>
+                    {{ data.phone if data.phone else '(No phone number set)' }}
+                </strong>
+            </div>
+
             {% for item in data.cart_items %}
             <div class="cart-item d-flex justify-content-between align-items-center">
                 <div>
                     <strong>{{ item.name }}</strong><br>
-                    <small class="text-muted">Qty: {{ item.quantity }} × TTD {{ "%.2f"|format(item.price) }}</small>
+                    <small class="text-muted">TTD {{ "%.2f"|format(item.price) }} each</small>
                 </div>
                 <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <button onclick="changeQuantity({{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}, -1, {{ is_guest is defined and is_guest|lower }})" 
+                                class="btn btn-sm btn-outline-secondary">-</button>
+                        <input type="number" 
+                               id="qty-{{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}"
+                               value="{{ item.quantity }}" 
+                               min="1" 
+                               class="quantity-input form-control form-control-sm"
+                               onchange="updateQuantity({{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}, this.value, {{ is_guest is defined and is_guest|lower }})">
+                        <button onclick="changeQuantity({{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}, 1, {{ is_guest is defined and is_guest|lower }})" 
+                                class="btn btn-sm btn-outline-secondary">+</button>
+                    </div>
                     <div><strong>TTD {{ "%.2f"|format(item.subtotal) }}</strong></div>
                     <button onclick="removeItem({{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}, {{ is_guest is defined and is_guest|lower }})" 
-                        class="btn-remove" title="Remove item">
-                    ✕
-                </button>
+                            class="btn-remove" title="Remove item">✕</button>
                 </div>
             </div>
             {% endfor %}
+            
             <div class="total-row d-flex justify-content-between">
                 <span>Subtotal</span>
                 <span>TTD {{ "%.2f"|format(data.subtotal) }}</span>
             </div>
         </div>
         {% endfor %}
-
-        <div class="alert alert-info mt-4">
-            <strong>📞 To order:</strong> Call the food place directly.<br>
-            <small>Phone numbers can be added later by admin.</small>
-        </div>
 
         <div class="cart-section total-row d-flex justify-content-between fs-5">
             <span>Grand Total</span>
@@ -97,7 +124,6 @@
             <a href="/app" class="btn btn-outline-success flex-fill">← Continue Shopping</a>
             <button onclick="clearCart()" class="btn btn-clear flex-fill">Clear Cart</button>
         </div>
-
 
     {% else %}
         <div class="text-center py-5">
@@ -112,49 +138,27 @@
 <script>
 function clearCart() {
     if (confirm("Clear the entire cart?")) {
-        fetch('/cart/clear', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Reload the page to show empty cart
-                window.location.reload();
-            } else {
-                alert('Failed to clear cart: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to clear cart');
-        });
+        fetch('/cart/clear', { method: 'POST' })
+        .then(() => window.location.reload());
     }
 }
 
 function removeItem(itemId, isGuest) {
     if (confirm("Remove this item from cart?")) {
-        fetch(`/cart/remove/${itemId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Failed to remove item: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Failed to remove item');
-        });
+        fetch(`/cart/remove/${itemId}`, { method: 'POST' })
+        .then(() => window.location.reload());
     }
+}
+
+function changeQuantity(itemId, delta, isGuest) {
+    fetch(`/cart/change/${itemId}?delta=${delta}`, { method: 'POST' })
+    .then(() => window.location.reload());
+}
+
+function updateQuantity(itemId, newQuantity, isGuest) {
+    if (newQuantity < 1) newQuantity = 1;
+    fetch(`/cart/change/${itemId}?new_quantity=${newQuantity}`, { method: 'POST' })
+    .then(() => window.location.reload());
 }
 </script>
 {% endblock %}

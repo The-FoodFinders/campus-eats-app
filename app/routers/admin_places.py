@@ -27,7 +27,7 @@ async def admin_place_new_form(request: Request, user: AdminDep):
     return templates.TemplateResponse(
         request=request,
         name="admin/place_form.html",
-        context={"user": user}
+        context={"user": user, "place": None}
     )
 
 @admin_router.post("/places/new")
@@ -50,9 +50,56 @@ async def admin_place_create(
         longitude=longitude
     )
     repo.create(new_place)
-    flash(request, f"✅ {name} added successfully!", "success")
+    flash(request, f"✅ {name} created successfully!", "success")
     return RedirectResponse(url=request.url_for("admin_places_list"), status_code=status.HTTP_303_SEE_OTHER)
 
+@admin_router.get("/places/{place_id}/edit", response_class=HTMLResponse)
+async def admin_place_edit_form(request: Request, place_id: int, user: AdminDep, db: SessionDep):
+    repo = RestaurantRepository(db)
+    place = repo.get_by_id(place_id)
+    if not place:
+        flash(request, "Place not found", "danger")
+        return RedirectResponse(url=request.url_for("admin_places_list"))
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/place_form.html",
+        context={"user": user, "place": place}
+    )
+
+@admin_router.post("/places/{place_id}/edit")
+async def admin_place_update(
+    request: Request,
+    place_id: int,
+    user: AdminDep,
+    db: SessionDep,
+    name: str = Form(),
+    location: str = Form(),
+    description: str = Form(default=""),
+    latitude: float = Form(),
+    longitude: float = Form()
+):
+    repo = RestaurantRepository(db)
+    updated = repo.update(place_id, {
+        "name": name,
+        "location": location,
+        "description": description,
+        "latitude": latitude,
+        "longitude": longitude
+    })
+    flash(request, f"✅ {name} updated successfully!", "success")
+    return RedirectResponse(url=request.url_for("admin_places_list"), status_code=status.HTTP_303_SEE_OTHER)
+
+@admin_router.post("/places/{place_id}/delete")
+async def admin_place_delete(
+    request: Request,
+    place_id: int,
+    user: AdminDep,
+    db: SessionDep
+):
+    repo = RestaurantRepository(db)
+    repo.delete(place_id)
+    flash(request, "Place deleted successfully!", "success")
+    return RedirectResponse(url=request.url_for("admin_places_list"), status_code=status.HTTP_303_SEE_OTHER)
 
 # ====================== MENU ITEMS ======================
 
@@ -60,14 +107,11 @@ async def admin_place_create(
 async def admin_menu_list(request: Request, place_id: int, user: AdminDep, db: SessionDep):
     restaurant_repo = RestaurantRepository(db)
     menu_repo = MenuRepository(db)
-
     place = restaurant_repo.get_by_id(place_id)
     if not place:
         flash(request, "Place not found", "danger")
         return RedirectResponse(url=request.url_for("admin_places_list"))
-
     menu_items = menu_repo.get_by_restaurant(place_id)
-
     return templates.TemplateResponse(
         request=request,
         name="admin/menu_list.html",
@@ -81,11 +125,10 @@ async def admin_menu_new_form(request: Request, place_id: int, user: AdminDep, d
     if not place:
         flash(request, "Place not found", "danger")
         return RedirectResponse(url=request.url_for("admin_places_list"))
-
     return templates.TemplateResponse(
         request=request,
         name="admin/menu_form.html",
-        context={"place": place, "user": user}
+        context={"place": place, "item": None, "user": user}
     )
 
 @admin_router.post("/places/{place_id}/menu/new")
@@ -109,4 +152,52 @@ async def admin_menu_create(
     )
     repo.create(new_item)
     flash(request, f"✅ {name} added to menu!", "success")
+    return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
+
+@admin_router.get("/places/{place_id}/menu/{item_id}/edit", response_class=HTMLResponse)
+async def admin_menu_edit_form(request: Request, place_id: int, item_id: int, user: AdminDep, db: SessionDep):
+    menu_repo = MenuRepository(db)
+    item = menu_repo.get_by_id(item_id)
+    if not item or item.restaurant_id != place_id:
+        flash(request, "Menu item not found", "danger")
+        return RedirectResponse(url=f"/admin/places/{place_id}/menu")
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/menu_form.html",
+        context={"place": None, "item": item, "user": user}
+    )
+
+@admin_router.post("/places/{place_id}/menu/{item_id}/edit")
+async def admin_menu_update(
+    request: Request,
+    place_id: int,
+    item_id: int,
+    user: AdminDep,
+    db: SessionDep,
+    name: str = Form(),
+    price: float = Form(),
+    description: str = Form(default=""),
+    is_available: bool = Form(default=True)
+):
+    repo = MenuRepository(db)
+    repo.update(item_id, {
+        "name": name,
+        "price": price,
+        "description": description,
+        "is_available": is_available
+    })
+    flash(request, f"✅ {name} updated!", "success")
+    return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
+
+@admin_router.post("/places/{place_id}/menu/{item_id}/delete")
+async def admin_menu_delete(
+    request: Request,
+    place_id: int,
+    item_id: int,
+    user: AdminDep,
+    db: SessionDep
+):
+    repo = MenuRepository(db)
+    repo.delete(item_id)
+    flash(request, "Menu item deleted!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)

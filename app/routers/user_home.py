@@ -310,7 +310,21 @@ async def view_cart(
             place_name = item.get("restaurant_name", "Unknown Place")
             
             if place_name not in items_by_place:
-                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}
+                # Get real phone from database for guest cart too
+                restaurant = db.get(Restaurant, item.get("restaurant_id"))
+                # Safely get phone attribute, handle if column doesn't exist
+                phone = None
+                if restaurant:
+                    try:
+                        phone = getattr(restaurant, 'phone', None)
+                    except:
+                        phone = None
+                
+                items_by_place[place_name] = {
+                    "cart_items": [], 
+                    "subtotal": 0.0,
+                    "phone": phone
+                }
             
             subtotal = item["quantity"] * item["price"]
             
@@ -319,7 +333,7 @@ async def view_cart(
                 "quantity": item["quantity"],
                 "price": item["price"],
                 "subtotal": subtotal,
-                "menu_item_id": item["menu_item_id"]  # Store ID for removal
+                "menu_item_id": item["menu_item_id"]
             })
             
             items_by_place[place_name]["subtotal"] += subtotal
@@ -332,7 +346,7 @@ async def view_cart(
                 "user": user,
                 "items_by_place": items_by_place,
                 "grand_total": grand_total,
-                "is_guest": True  # Add this
+                "is_guest": True
             }
         )
     
@@ -358,7 +372,19 @@ async def view_cart(
             place_name = restaurant.name if restaurant else "Unknown Place"
 
             if place_name not in items_by_place:
-                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}
+                # Safely get phone attribute
+                phone = None
+                if restaurant:
+                    try:
+                        phone = getattr(restaurant, 'phone', None)
+                    except:
+                        phone = None
+                    
+                items_by_place[place_name] = {
+                    "cart_items": [], 
+                    "subtotal": 0.0,
+                    "phone": phone
+                }
 
             subtotal = item.quantity * item.price
 
@@ -380,7 +406,7 @@ async def view_cart(
             "user": user,
             "items_by_place": items_by_place,
             "grand_total": grand_total,
-            "is_guest": False  # Add this
+            "is_guest": False
         }
     )
 
@@ -473,3 +499,55 @@ async def remove_cart_item(
         db.commit()
     
     return JSONResponse({"success": True, "message": "Item removed from cart"})
+
+@router.post("/cart/change/{item_id}")
+async def change_cart_item_quantity(
+    request: Request,
+    item_id: int,
+    user: OptionalUser,
+    db: SessionDep,
+    delta: int = Query(0),
+    new_quantity: int = Query(0)
+):
+    # Handle guest cart
+    if not user:
+        guest_cart = request.session.get("guest_cart", [])
+        
+        for idx, item in enumerate(guest_cart):
+            if item.get("menu_item_id") == item_id:
+                if new_quantity > 0:
+                    # Set to specific quantity
+                    item["quantity"] = new_quantity
+                elif delta != 0:
+                    # Change by delta amount
+                    item["quantity"] += delta
+                else:
+                    return JSONResponse({"success": False, "message": "Invalid operation"}, status_code=400)
+                
+                # Remove item if quantity becomes 0 or less
+                if item["quantity"] <= 0:
+                    guest_cart.pop(idx)
+                break
+        
+        request.session["guest_cart"] = guest_cart
+        return JSONResponse({"success": True, "message": "Quantity updated"})
+    
+    # Handle logged-in user
+    order_item = db.get(OrderItem, item_id)
+    if order_item:
+        if new_quantity > 0:
+            # Set to specific quantity
+            order_item.quantity = new_quantity
+        elif delta != 0:
+            # Change by delta amount
+            order_item.quantity += delta
+        else:
+            return JSONResponse({"success": False, "message": "Invalid operation"}, status_code=400)
+        
+        if order_item.quantity <= 0:
+            db.delete(order_item)
+        else:
+            db.add(order_item)
+        db.commit()
+    
+    return JSONResponse({"success": True, "message": "Quantity updated"})

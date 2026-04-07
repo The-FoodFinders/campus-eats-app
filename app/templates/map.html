@@ -37,7 +37,25 @@
         transform: rotate(45deg);
     }
     .leaflet-container a {
-    color: black !important;
+        color: black !important;
+    }
+    /* Longer Find Me button */
+    #locate-btn {
+        background: #2d6a4f;
+        color: white;
+        padding: 8px 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        min-width: 110px;
+        justify-content: center;
+        text-decoration: none;
+    }
+    #locate-btn:hover {
+        background: #1b4332;
     }
 </style>
 {% endblock %}
@@ -87,11 +105,11 @@
          .addTo(map);
     });
 
-    // Find Me Button
+    // Find Me Button - longer version
     const locateBtn = L.control({position: 'topright'});
     locateBtn.onAdd = function() {
         const div = L.DomUtil.create('div', 'leaflet-bar');
-        div.innerHTML = `<a id="locate-btn" href="#" title="Find Me">📍</a>`;
+        div.innerHTML = `<a id="locate-btn" href="#" title="Find My Location">📍 Find Me</a>`;
         return div;
     };
     locateBtn.addTo(map);

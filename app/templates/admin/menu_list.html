@@ -2,8 +2,10 @@
 
 {% block subpage_content %}
 <div class="container py-4">
-    <h2 class="text-success">{{ place.name }} - Menu</h2>
-    <a href="{{ url_for('admin_menu_new_form', place_id=place.id) }}" class="btn btn-success mb-3">+ Add Menu Item</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-success">{{ place.name }} - Menu</h2>
+        <a href="{{ url_for('admin_menu_new_form', place_id=place.id) }}" class="btn btn-success">+ Add Menu Item</a>
+    </div>
 
     {% if menu_items %}
     <table class="table table-striped">
@@ -13,12 +15,13 @@
                 <th>Price</th>
                 <th>Description</th>
                 <th>Available</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for item in menu_items %}
             <tr>
-                <td>{{ item.name }}</td>
+                <td><strong>{{ item.name }}</strong></td>
                 <td>TTD {{ "%.2f"|format(item.price) }}</td>
                 <td>{{ item.description or '-' }}</td>
                 <td>
@@ -27,6 +30,14 @@
                     {% else %}
                         <span class="badge bg-secondary">No</span>
                     {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('admin_menu_edit_form', place_id=place.id, item_id=item.id) }}" 
+                       class="btn btn-sm btn-warning">Edit</a>
+                    <form method="POST" action="/admin/places/{{ place.id }}/menu/{{ item.id }}/delete" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-danger" 
+                                onclick="return confirm('Delete this menu item?')">Delete</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
