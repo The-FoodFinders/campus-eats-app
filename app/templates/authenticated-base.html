@@ -41,6 +41,20 @@
         background: rgba(239, 5, 29, 0.35);
         color: white;
     }
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            transform: translateX(-100%); /* 👈 HIDE IT */
+            z-index: 1000;
+        }
+
+        .sidebar.active {
+            transform: translateX(0); /* 👈 SHOW WHEN ACTIVE */
+        }
+    }
     #content {
         width: 100%;
         padding: 1rem;
