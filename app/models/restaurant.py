@@ -9,6 +9,9 @@ class Restaurant(SQLModel, table=True):
     description: Optional[str] = None
     latitude: float
     longitude: float
+    category: Optional[str] = Field(default="General")  # added by Dabria  
+    # e.g. SAC, JFK, Engineering, etc.
+
 
     menu_items: List["MenuItem"] = Relationship(back_populates="restaurant")
     reviews: List["Review"] = Relationship(back_populates="restaurant")
