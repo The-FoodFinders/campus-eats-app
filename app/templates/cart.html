@@ -31,6 +31,20 @@
     }
     .btn-clear { background: #dc3545; color: white; }
     .btn-clear:hover { background: #c82333; color: white; }
+    .btn-remove {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .btn-remove:hover {
+        background: #dc3545;
+        color: white;
+    }
 </style>
 {% endblock %}
 
@@ -48,12 +62,18 @@
         <div class="cart-section">
             <h5 class="place-header">{{ place_name }}</h5>
             {% for item in data.cart_items %}
-            <div class="cart-item d-flex justify-content-between">
+            <div class="cart-item d-flex justify-content-between align-items-center">
                 <div>
                     <strong>{{ item.name }}</strong><br>
                     <small class="text-muted">Qty: {{ item.quantity }} × TTD {{ "%.2f"|format(item.price) }}</small>
                 </div>
-                <div><strong>TTD {{ "%.2f"|format(item.subtotal) }}</strong></div>
+                <div class="d-flex align-items-center gap-3">
+                    <div><strong>TTD {{ "%.2f"|format(item.subtotal) }}</strong></div>
+                    <button onclick="removeItem({{ item.menu_item_id if is_guest is defined and is_guest else item.order_item_id }}, {{ is_guest is defined and is_guest|lower }})" 
+                        class="btn-remove" title="Remove item">
+                    ✕
+                </button>
+                </div>
             </div>
             {% endfor %}
             <div class="total-row d-flex justify-content-between">
@@ -110,6 +130,29 @@ function clearCart() {
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to clear cart');
+        });
+    }
+}
+
+function removeItem(itemId, isGuest) {
+    if (confirm("Remove this item from cart?")) {
+        fetch(`/cart/remove/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Failed to remove item: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to remove item');
         });
     }
 }

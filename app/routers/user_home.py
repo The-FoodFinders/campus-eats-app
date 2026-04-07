@@ -219,14 +219,46 @@ async def view_map(
 async def add_to_order(
     request: Request,
     menu_item_id: int,
-    user: AuthDep,
+    user: OptionalUser,  # Changed from AuthDep to OptionalUser
     db: SessionDep,
     quantity: int = Form(...)
 ):
     menu_item = db.get(MenuItem, menu_item_id)
     if not menu_item:
         raise HTTPException(status_code=404, detail="Menu item not found")
-
+    
+    # For guest users, store cart in session
+    if not user:
+        # Get or create guest cart in session
+        guest_cart = request.session.get("guest_cart", [])
+        
+        # Check if item already in cart
+        found = False
+        for item in guest_cart:
+            if item["menu_item_id"] == menu_item_id:
+                item["quantity"] += quantity
+                found = True
+                break
+        
+        if not found:
+            guest_cart.append({
+                "menu_item_id": menu_item_id,
+                "name": menu_item.name,
+                "price": menu_item.price,
+                "quantity": quantity,
+                "restaurant_id": menu_item.restaurant_id,
+                "restaurant_name": db.get(Restaurant, menu_item.restaurant_id).name
+            })
+        
+        request.session["guest_cart"] = guest_cart
+        flash(request, f"{menu_item.name} added to cart!", "success")
+        
+        return RedirectResponse(
+            url=request.url_for("restaurant_menu", restaurant_id=menu_item.restaurant_id),
+            status_code=status.HTTP_303_SEE_OTHER
+        )
+    
+    # For logged-in users, use database
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
@@ -247,7 +279,7 @@ async def add_to_order(
         order_id=order.id,
         menu_item_id=menu_item.id,
         quantity=quantity,
-        price=menu_item.price  # snapshot price
+        price=menu_item.price
     )
 
     db.add(order_item)
@@ -260,21 +292,57 @@ async def add_to_order(
         status_code=status.HTTP_303_SEE_OTHER
     )
 
+
 @router.get("/cart", response_class=HTMLResponse)
 async def view_cart(
     request: Request,
-    user: AuthDep,
+    user: OptionalUser,
     db: SessionDep
 ):
+    items_by_place = {}
+    grand_total = 0.0
+    
+    # Handle guest cart from session
+    if not user:
+        guest_cart = request.session.get("guest_cart", [])
+        
+        for item in guest_cart:
+            place_name = item.get("restaurant_name", "Unknown Place")
+            
+            if place_name not in items_by_place:
+                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}
+            
+            subtotal = item["quantity"] * item["price"]
+            
+            items_by_place[place_name]["cart_items"].append({
+                "name": item["name"],
+                "quantity": item["quantity"],
+                "price": item["price"],
+                "subtotal": subtotal,
+                "menu_item_id": item["menu_item_id"]  # Store ID for removal
+            })
+            
+            items_by_place[place_name]["subtotal"] += subtotal
+            grand_total += subtotal
+        
+        return templates.TemplateResponse(
+            request=request,
+            name="cart.html",
+            context={
+                "user": user,
+                "items_by_place": items_by_place,
+                "grand_total": grand_total,
+                "is_guest": True  # Add this
+            }
+        )
+    
+    # Handle logged-in user cart from database
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
             Order.status == "pending"
         )
     ).first()
-
-    items_by_place = {}
-    grand_total = 0.0
 
     if order:
         order_items = db.exec(
@@ -290,15 +358,16 @@ async def view_cart(
             place_name = restaurant.name if restaurant else "Unknown Place"
 
             if place_name not in items_by_place:
-                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}  # Changed from "items" to "cart_items"
+                items_by_place[place_name] = {"cart_items": [], "subtotal": 0.0}
 
             subtotal = item.quantity * item.price
 
-            items_by_place[place_name]["cart_items"].append({  # Changed here
+            items_by_place[place_name]["cart_items"].append({
                 "name": menu_item.name,
                 "quantity": item.quantity,
                 "price": item.price,
-                "subtotal": subtotal
+                "subtotal": subtotal,
+                "order_item_id": item.id
             })
 
             items_by_place[place_name]["subtotal"] += subtotal
@@ -310,9 +379,11 @@ async def view_cart(
         context={
             "user": user,
             "items_by_place": items_by_place,
-            "grand_total": grand_total
+            "grand_total": grand_total,
+            "is_guest": False  # Add this
         }
     )
+
 
 @router.post("/order/checkout")
 async def checkout(
@@ -350,10 +421,16 @@ async def campus_map_view(
 
 @router.post("/cart/clear")
 async def clear_cart(
-    user: AuthDep,
+    request: Request,
+    user: OptionalUser,  # Changed from AuthDep to OptionalUser
     db: SessionDep
 ):
-    # Get the user's pending order
+    # Handle guest cart
+    if not user:
+        request.session["guest_cart"] = []
+        return JSONResponse({"success": True, "message": "Cart cleared successfully"})
+    
+    # Handle logged-in user
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
@@ -362,7 +439,6 @@ async def clear_cart(
     ).first()
     
     if order:
-        # Delete all order items for this order
         order_items = db.exec(
             select(OrderItem).where(OrderItem.order_id == order.id)
         ).all()
@@ -370,9 +446,30 @@ async def clear_cart(
         for item in order_items:
             db.delete(item)
         
-        # Delete the order itself
         db.delete(order)
         db.commit()
     
-    # Return JSON response for AJAX call
     return JSONResponse({"success": True, "message": "Cart cleared successfully"})
+
+
+@router.post("/cart/remove/{item_id}")
+async def remove_cart_item(
+    request: Request,
+    item_id: int,
+    user: OptionalUser,
+    db: SessionDep
+):
+    # Handle guest cart removal
+    if not user:
+        guest_cart = request.session.get("guest_cart", [])
+        guest_cart = [item for item in guest_cart if item.get("menu_item_id") != item_id]
+        request.session["guest_cart"] = guest_cart
+        return JSONResponse({"success": True, "message": "Item removed from cart"})
+    
+    # Handle logged-in user removal
+    order_item = db.get(OrderItem, item_id)
+    if order_item:
+        db.delete(order_item)
+        db.commit()
+    
+    return JSONResponse({"success": True, "message": "Item removed from cart"})
