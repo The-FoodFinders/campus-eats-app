@@ -42,17 +42,18 @@
         color: white;
     }
     @media (max-width: 768px) {
-        .sidebar {
+        #sidebar {
             position: fixed;
             top: 0;
             left: 0;
             height: 100%;
-            transform: translateX(-100%); /* 👈 HIDE IT */
-            z-index: 1000;
+            width: 250px;
+            transform: translateX(-100%); 
+            transition: transform 0.3s ease;
         }
 
-        .sidebar.active {
-            transform: translateX(0); /* 👈 SHOW WHEN ACTIVE */
+        #sidebar.collapsed {
+            transform: translateX(0); 
         }
     }
     #content {
