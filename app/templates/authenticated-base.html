@@ -74,10 +74,11 @@
             position: fixed;
             left: 0;
             top: 0;
-            height: 100vh;
+            height: 100dvh;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
             z-index: 1050;
+            padding-bottom: 80px !important;
         }
         #sidebar.collapsed {
             transform: translateX(0);
@@ -86,23 +87,7 @@
         #content {
             margin-left: 0;
             width: 100%;
-            padding: 0.75rem;
-            padding-top: 0.5rem;
-        }
-        /* Adjust navbar for mobile */
-        .navbar {
-            padding: 10px 16px !important;
-            margin-bottom: 1rem !important;
-        }
-        .navbar .fw-semibold {
-            font-size: 0.85rem;
-            padding: 4px 12px;
-        }
-        #menu-toggle {
-            padding: 4px 8px;
-        }
-        #menu-toggle .material-symbols-outlined {
-            font-size: 22px;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
         /* Add overlay when sidebar is open on mobile */
         .sidebar-overlay {
@@ -118,23 +103,17 @@
         .sidebar-overlay.active {
             display: block;
         }
-        /* Extra padding for mobile content to avoid bottom nav issues */
-        .container, .row > div {
-            margin-bottom: env(safe-area-inset-bottom, 0px);
+        
+        /* Adjust logout button position for mobile browsers */
+        #sidebar .mt-auto {
+            margin-bottom: 20px;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
-        body {
-            padding-bottom: env(safe-area-inset-bottom, 0px);
-        }
-    }
-    
-    /* Extra small devices */
-    @media (max-width: 480px) {
-        .navbar .fw-semibold {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-        }
-        #content {
-            padding: 0.5rem;
+        
+        /* Make nav links more touch-friendly on mobile */
+        #sidebar .nav-link {
+            padding: 14px 16px;
+            margin: 6px 12px;
         }
     }
 </style>
@@ -177,8 +156,8 @@
             {% endif %}
         </ul>
         
-        <!-- Logout always at bottom -->
-        <div class="mt-auto">
+        <!-- Logout always at bottom with safe area spacing -->
+        <div class="mt-auto pb-2">
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center text-danger" href="/logout">
                     <span class="material-symbols-outlined me-2">logout</span>
@@ -225,15 +204,13 @@
         if (overlay) overlay.classList.add("active");
     }
     
-    if (menuToggle) {
-        menuToggle.addEventListener("click", function () {
-            if (sidebar.classList.contains("collapsed")) {
-                closeSidebar();
-            } else {
-                openSidebar();
-            }
-        });
-    }
+    menuToggle.addEventListener("click", function () {
+        if (sidebar.classList.contains("collapsed")) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
     
     // Close sidebar when clicking overlay
     if (overlay) {
@@ -250,13 +227,20 @@
         }
     });
     
-    // Handle mobile viewport height issues (for Chrome mobile)
-    function setVH() {
-        let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-    }
-    setVH();
-    window.addEventListener('resize', setVH);
+    // Prevent body scroll when sidebar is open on mobile
+    sidebar.addEventListener('transitionstart', function() {
+        if (window.innerWidth <= 768 && sidebar.classList.contains("collapsed")) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    });
+    
+    sidebar.addEventListener('transitionend', function() {
+        if (!sidebar.classList.contains("collapsed")) {
+            document.body.style.overflow = '';
+        }
+    });
 </script>
 {% block subpage_scripts %}{% endblock %}
 {% endblock %}
