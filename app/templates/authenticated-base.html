@@ -9,11 +9,6 @@
     #wrapper {
         display: flex;
     }
-    @media (max-width: 768px) {
-        #wrapper.active #content {
-            margin-left: 250px;
-        }
-    }
     #sidebar {
         min-width: 250px;
         max-width: 250px;
@@ -21,15 +16,13 @@
         transition: all 0.3s;
         background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 100%);
         color: #fff;
-        position: relative;
+        position: sticky;
         top: 0;
         overflow-y: auto;
         z-index: 100;
     }
-    @media (min-width: 769px) {
-        #sidebar.collapsed {
-            margin-left: -250px;
-        }
+    #sidebar.collapsed {
+        margin-left: -250px;
     }
     #sidebar .nav-link {
         color: #d8f3dc !important;
@@ -47,20 +40,6 @@
     #sidebar .nav-link.text-danger:hover {
         background: rgba(239, 5, 29, 0.35);
         color: white;
-    }
-    @media (max-width: 768px) {
-        #sidebar {
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 250px;
-            transform: translateX(-100%); 
-            transition: transform 0.3s ease;
-        }
-
-        #sidebar.collapsed {
-            transform: translateX(0); 
-        }
     }
     #content {
         width: 100%;
@@ -88,12 +67,48 @@
         padding: 6px 16px;
         border-radius: 30px;
     }
+
+    /* Mobile fixes */
+    @media (max-width: 768px) {
+        #sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 1050;
+        }
+        #sidebar.collapsed {
+            transform: translateX(0);
+            margin-left: 0;
+        }
+        #content {
+            margin-left: 0;
+            width: 100%;
+        }
+        /* Add overlay when sidebar is open on mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1040;
+            display: none;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+    }
 </style>
 {% block additional_styles %}{% endblock %}
 {% endblock %}
 
 {% block content %}
 <div id="wrapper">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <nav id="sidebar" class="p-3 d-flex flex-column">
         <div class="brand text-center py-4">
             <h3>Campus Eats</h3>
@@ -161,11 +176,41 @@
     </div>
 </div>
 <script>
-    document.getElementById("menu-toggle").addEventListener("click", function (e) {
-        e.preventDefault();         
-        e.stopPropagation();
-        document.getElementById("sidebar").classList.toggle("collapsed");
-        document.getElementById("wrapper").classList.toggle("active");
+    const menuToggle = document.getElementById("menu-toggle");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    
+    function closeSidebar() {
+        sidebar.classList.remove("collapsed");
+        if (overlay) overlay.classList.remove("active");
+    }
+    
+    function openSidebar() {
+        sidebar.classList.add("collapsed");
+        if (overlay) overlay.classList.add("active");
+    }
+    
+    menuToggle.addEventListener("click", function () {
+        if (sidebar.classList.contains("collapsed")) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+    
+    // Close sidebar when clicking overlay
+    if (overlay) {
+        overlay.addEventListener("click", function () {
+            closeSidebar();
+        });
+    }
+    
+    // Close sidebar on window resize if screen becomes larger
+    window.addEventListener("resize", function () {
+        if (window.innerWidth > 768) {
+            closeSidebar();
+            if (overlay) overlay.classList.remove("active");
+        }
     });
 </script>
 {% block subpage_scripts %}{% endblock %}
