@@ -86,6 +86,23 @@
         #content {
             margin-left: 0;
             width: 100%;
+            padding: 0.75rem;
+            padding-top: 0.5rem;
+        }
+        /* Adjust navbar for mobile */
+        .navbar {
+            padding: 10px 16px !important;
+            margin-bottom: 1rem !important;
+        }
+        .navbar .fw-semibold {
+            font-size: 0.85rem;
+            padding: 4px 12px;
+        }
+        #menu-toggle {
+            padding: 4px 8px;
+        }
+        #menu-toggle .material-symbols-outlined {
+            font-size: 22px;
         }
         /* Add overlay when sidebar is open on mobile */
         .sidebar-overlay {
@@ -100,6 +117,24 @@
         }
         .sidebar-overlay.active {
             display: block;
+        }
+        /* Extra padding for mobile content to avoid bottom nav issues */
+        .container, .row > div {
+            margin-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+    }
+    
+    /* Extra small devices */
+    @media (max-width: 480px) {
+        .navbar .fw-semibold {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+        #content {
+            padding: 0.5rem;
         }
     }
 </style>
@@ -190,13 +225,15 @@
         if (overlay) overlay.classList.add("active");
     }
     
-    menuToggle.addEventListener("click", function () {
-        if (sidebar.classList.contains("collapsed")) {
-            closeSidebar();
-        } else {
-            openSidebar();
-        }
-    });
+    if (menuToggle) {
+        menuToggle.addEventListener("click", function () {
+            if (sidebar.classList.contains("collapsed")) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+    }
     
     // Close sidebar when clicking overlay
     if (overlay) {
@@ -212,6 +249,14 @@
             if (overlay) overlay.classList.remove("active");
         }
     });
+    
+    // Handle mobile viewport height issues (for Chrome mobile)
+    function setVH() {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    setVH();
+    window.addEventListener('resize', setVH);
 </script>
 {% block subpage_scripts %}{% endblock %}
 {% endblock %}
