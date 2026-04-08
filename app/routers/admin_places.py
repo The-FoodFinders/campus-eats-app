@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Request, Depends, Form, status
+from fastapi import APIRouter, Request, Form, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from app.dependencies import AdminDep, SessionDep
 from app.repositories.restaurant import RestaurantRepository
 from app.repositories.menu import MenuRepository
 from app.models.restaurant import Restaurant
 from app.models.menu import MenuItem
+from app.models.review import Review
+from app.models.user import User
 from app.utilities.flash import flash
 from . import router, templates
+from sqlmodel import select
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -203,7 +206,6 @@ async def admin_menu_toggle_availability(
         flash(request, "Menu item not found", "danger")
         return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
     
-    # Toggle availability
     item.is_available = not item.is_available
     db.add(item)
     db.commit()
@@ -211,3 +213,40 @@ async def admin_menu_toggle_availability(
     status_text = "enabled" if item.is_available else "disabled"
     flash(request, f"Menu item '{item.name}' has been {status_text}!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
+
+# ====================== REVIEWS MODERATION ======================
+
+@admin_router.get("/reviews", response_class=HTMLResponse, name="admin_reviews")
+async def admin_reviews_list(request: Request, user: AdminDep, db: SessionDep):
+    reviews = db.exec(
+        select(Review, Restaurant.name.label("restaurant_name"), User.username)
+        .join(Restaurant, Review.restaurant_id == Restaurant.id)
+        .join(User, Review.user_id == User.id)
+        .order_by(Review.created_at.desc())
+    ).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="admin/reviews.html",
+        context={
+            "user": user,
+            "reviews": reviews
+        }
+    )
+
+@admin_router.post("/reviews/{review_id}/delete")
+async def admin_review_delete(
+    request: Request,
+    review_id: int,
+    user: AdminDep,
+    db: SessionDep
+):
+    review = db.get(Review, review_id)
+    if not review:
+        flash(request, "Review not found", "danger")
+    else:
+        db.delete(review)
+        db.commit()
+        flash(request, "Review deleted successfully!", "success")
+    
+    return RedirectResponse(url=request.url_for("admin_reviews"), status_code=status.HTTP_303_SEE_OTHER)
