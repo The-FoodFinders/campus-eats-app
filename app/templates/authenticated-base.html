@@ -128,6 +128,18 @@
             <h3>Campus Eats</h3>
         </div>
         <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
+            
+            {% if user and user.role == 'admin' %}
+            <!-- Admins see ONLY Admin Dashboard -->
+            <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/admin' }}" href="/admin">
+                    <span class="material-symbols-outlined me-2">dashboard</span>
+                    Admin Dashboard
+                </a>
+            </li>
+            
+            {% else %}
+            <!-- Normal users and guests see these -->
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/app' }}" href="/app">
                     <span class="material-symbols-outlined me-2">restaurant</span>
@@ -140,23 +152,21 @@
                     Campus Map
                 </a>
             </li>
+            
+            {% if user %}  
+            <!-- Only logged-in (registered) users see Cart -->
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/cart' }}" href="/cart">
                     <span class="material-symbols-outlined me-2">shopping_cart</span>
                     My Cart
                 </a>
             </li>
-            {% if user and user.role == 'admin' %}
-            <li class="nav-item">
-                <a class="nav-link d-flex align-items-center {{ 'active' if request.url.path == '/admin' }}" href="/admin">
-                    <span class="material-symbols-outlined me-2">dashboard</span>
-                    Admin Dashboard
-                </a>
-            </li>
+            {% endif %}
+            
             {% endif %}
         </ul>
         
-        <!-- Logout always at bottom with safe area spacing -->
+        <!-- Logout always at bottom -->
         <div class="mt-auto pb-2">
             <li class="nav-item">
                 <a class="nav-link d-flex align-items-center text-danger" href="/logout">

@@ -86,7 +86,7 @@ async def admin_place_update(
         "latitude": latitude,
         "longitude": longitude
     })
-    flash(request, f"✅ {name} updated successfully!", "success")
+    flash(request, f"{name} updated successfully!", "success")
     return RedirectResponse(url=request.url_for("admin_places_list"), status_code=status.HTTP_303_SEE_OTHER)
 
 @admin_router.post("/places/{place_id}/delete")
@@ -186,18 +186,28 @@ async def admin_menu_update(
         "description": description,
         "is_available": is_available
     })
-    flash(request, f"✅ {name} updated!", "success")
+    flash(request, f"{name} updated!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
 
-@admin_router.post("/places/{place_id}/menu/{item_id}/delete")
-async def admin_menu_delete(
+@admin_router.post("/places/{place_id}/menu/{item_id}/toggle")
+async def admin_menu_toggle_availability(
     request: Request,
     place_id: int,
     item_id: int,
     user: AdminDep,
     db: SessionDep
 ):
-    repo = MenuRepository(db)
-    repo.delete(item_id)
-    flash(request, "Menu item deleted!", "success")
+    menu_repo = MenuRepository(db)
+    item = menu_repo.get_by_id(item_id)
+    if not item or item.restaurant_id != place_id:
+        flash(request, "Menu item not found", "danger")
+        return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
+    
+    # Toggle availability
+    item.is_available = not item.is_available
+    db.add(item)
+    db.commit()
+    
+    status_text = "enabled" if item.is_available else "disabled"
+    flash(request, f"Menu item '{item.name}' has been {status_text}!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)

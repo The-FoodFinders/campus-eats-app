@@ -35,11 +35,19 @@
                         <span class="badge bg-secondary">No</span>
                     {% endif %}
                 </td>
-                <td>
+                <td class="d-flex gap-2">
                     <a href="{{ url_for('admin_menu_edit_form', place_id=place.id, item_id=item.id) }}" 
-                       class="btn btn-sm btn-warning" style="background-color: lightgoldenrodyellow; border-color: lightgray;">Edit</a>
+                       class="btn btn-sm btn-warning">Edit</a>
+                    
+                    <!-- Toggle Availability -->
+                    <form method="POST" action="/admin/places/{{ place.id }}/menu/{{ item.id }}/toggle" style="display:inline;">
+                        <button type="submit" class="btn btn-sm {{ 'btn-success' if not item.is_available else 'btn-secondary' }}">
+                            {{ 'Enable' if not item.is_available else 'Disable' }}
+                        </button>
+                    </form>
+                    
                     <form method="POST" action="/admin/places/{{ place.id }}/menu/{{ item.id }}/delete" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-danger" style="background-color: lightcoral; border-color: lightgray; color: black;"
+                        <button type="submit" class="btn btn-sm btn-danger" 
                                 onclick="return confirm('Delete this menu item?')">Delete</button>
                     </form>
                 </td>
