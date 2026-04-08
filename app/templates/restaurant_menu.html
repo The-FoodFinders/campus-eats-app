@@ -17,8 +17,11 @@
     .menu-table thead { background: linear-gradient(135deg, #2d6a4f, #52b788); color: white; }
     .menu-table th, .menu-table td { padding: 12px 16px; vertical-align: middle; }
     .menu-table tbody tr:hover { background: #d8f3dc; }
-    .star { color: #f4a900; font-size: 1.1rem; }
-    .star-empty { color: #ccc; font-size: 1.1rem; }
+    
+    /* Consistent star styling */
+    .star { color: #f4a900; font-size: 1.2rem; }
+    .star-empty { color: #ccc; font-size: 1.2rem; }
+    
     .review-card { border-left: 4px solid #52b788; padding: 14px 16px; background: #f8fffe; border-radius: 10px; margin-bottom: 12px; }
     .review-card .reviewer { font-weight: 600; color: #1b4332; }
     .review-card .date { font-size: 0.78rem; color: #6c757d; }
@@ -62,69 +65,71 @@
     </div>
 
     <div class="section-card">
-    <h4>Menu</h4>
-    {% if menu_items %}
-    <div class="table-responsive">
-        <table class="table menu-table rounded-3 overflow-hidden">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Description</th>
-                    <th>Price</th>
-                    <th>Availability</th>
-                    {% if user %}
-                    <th>Action</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in menu_items %}
-                <tr>
-                    <td><strong>{{ item.name }}</strong></td>
-                    <td>{{ item.description or '—' }}</td>
-                    <td>TTD ${{ "%.2f"|format(item.price) }}</td>
-                    <td>
-                        {% if item.is_available %}
-                            <span class="badge bg-success">Available</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Unavailable</span>
+        <h4>Menu</h4>
+        {% if menu_items %}
+        <div class="table-responsive">
+            <table class="table menu-table rounded-3 overflow-hidden">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Availability</th>
+                        {% if user %}
+                        <th>Action</th>
                         {% endif %}
-                    </td>
-                    {% if user %}
-                    <td>
-                        {% if item.is_available %}
-                        <form method="post" action="/order/add/{{ item.id }}" class="d-flex align-items-center gap-2">
-                            <input 
-                                type="number" 
-                                name="quantity" 
-                                value="1" 
-                                min="1" 
-                                class="form-control form-control-sm" 
-                                style="width:70px; border-radius:8px;"
-                            >
-                            <button type="submit" class="btn btn-sm btn-success" style="border-radius:8px;">
-                                Add to Cart
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in menu_items %}
+                    <tr>
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td>{{ item.description or '—' }}</td>
+                        <td>TTD ${{ "%.2f"|format(item.price) }}</td>
+                        <td>
+                            {% if item.is_available %}
+                                <span class="badge bg-success">Available</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Unavailable</span>
+                            {% endif %}
+                        </td>
+                        {% if user %}
+                        <td>
+                            {% if item.is_available %}
+                            <form method="post" action="/order/add/{{ item.id }}" class="d-flex align-items-center gap-2">
+                                <input 
+                                    type="number" 
+                                    name="quantity" 
+                                    value="1" 
+                                    min="1" 
+                                    class="form-control form-control-sm" 
+                                    style="width:70px; border-radius:8px;"
+                                >
+                                <button type="submit" class="btn btn-sm btn-success" style="border-radius:8px;">
+                                    Add to Cart
+                                </button>
+                            </form>
+                            {% else %}
+                            <button type="button" class="btn btn-sm btn-secondary" disabled style="border-radius:8px;">
+                                Unavailable
                             </button>
-                        </form>
-                        {% else %}
-                        <button type="button" class="btn btn-sm btn-secondary" disabled style="border-radius:8px;">
-                            Unavailable
-                        </button>
+                            {% endif %}
+                        </td>
                         {% endif %}
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="text-muted">No menu items listed yet.</p>
+        {% endif %}
     </div>
-    {% else %}
-        <p class="text-muted">No menu items listed yet.</p>
-    {% endif %}
-</div>
 
     <div class="section-card">
-        <h4>⭐ Reviews</h4>
+        <h4>
+            Reviews
+        </h4>
 
         {% if reviews %}
             {% for r in reviews %}
@@ -132,7 +137,7 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <span class="reviewer">{{ r.username }}</span>
-                        <span class="date ms-2">{{ r.created_at.strftime('%d %b %Y') }}"></span>
+                        <span class="date ms-2">{{ r.created_at.strftime('%d %b %Y') }}</span>
                         <div>
                             {% for i in range(1, 6) %}
                                 {% if i <= r.rating %}
@@ -145,7 +150,8 @@
                     </div>
                     {% if user and (user.id == r.user_id or user.role == 'admin') %}
                     <form method="POST" action="/restaurant/{{ restaurant.id }}/review/{{ r.id }}/delete">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Delete this review?')">Delete</button>
                     </form>
                     {% endif %}
                 </div>
