@@ -16,13 +16,15 @@
         transition: all 0.3s;
         background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 100%);
         color: #fff;
-        position: sticky;
+        position: relative;
         top: 0;
         overflow-y: auto;
         z-index: 100;
     }
-    #sidebar.collapsed {
-        margin-left: -250px;
+    @media (min-width: 769px) {
+        #sidebar.collapsed {
+            margin-left: -250px;
+        }
     }
     #sidebar .nav-link {
         color: #d8f3dc !important;
