@@ -285,7 +285,7 @@ async def add_to_order(
     db.add(order_item)
     db.commit()
 
-    flash(request, f"{menu_item.name} added to order!", "success")
+    flash(request, f"{menu_item.name} added to cart!", "success")
 
     return RedirectResponse(
         url=request.url_for("restaurant_menu", restaurant_id=menu_item.restaurant_id),
