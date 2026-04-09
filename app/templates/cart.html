@@ -77,9 +77,9 @@
             <!-- Real phone number from Restaurant model -->
             <div class="place-phone">
                 📞 Call to order: 
-                <strong>
+                <a href="tele: {{ data.phone }}">
                     {{ data.phone if data.phone else '(No phone number set)' }}
-                </strong>
+                </a>
             </div>
 
             {% for item in data.cart_items %}
