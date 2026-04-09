@@ -205,12 +205,16 @@ async def view_map(
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
 
+    # Get ALL restaurants for the map, but we'll highlight the selected one
+    all_restaurants = db.exec(select(Restaurant)).all()
+    
     return templates.TemplateResponse(
         request=request,
         name="map.html",
         context={
             "user": user,
-            "restaurant": restaurant
+            "restaurants": all_restaurants,  # Pass all restaurants
+            "selected_restaurant_id": restaurant_id  # Pass which one to highlight
         }
     )
 
