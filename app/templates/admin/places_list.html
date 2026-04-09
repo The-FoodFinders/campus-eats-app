@@ -15,10 +15,10 @@
                     <h5 class="card-title">{{ place.name }}</h5>
                     <p class="text-muted">{{ place.location }}</p>
                     {% if place.category %}
-                    <span class="badge bg-light text-dark">{{ place.category }}</span>
+                    <span class="badge bg-light text-dark">{{ place.category }}</span><br>
                     {% endif %}
                     {% if place.phone %}
-                    <p class="small mt-2">📞 {{ place.phone }}</p>
+                    <a href="tel: {{ place.phone }}">📞 {{ place.phone }}</a>
                     {% endif %}
                 </div>
                 <div class="card-footer bg-white border-0 d-flex gap-2">
