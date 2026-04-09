@@ -205,7 +205,6 @@ async def view_map(
     if not restaurant:
         raise HTTPException(status_code=404, detail="Restaurant not found")
 
-    # Get ALL restaurants for the map, but we'll highlight the selected one
     all_restaurants = db.exec(select(Restaurant)).all()
     
     return templates.TemplateResponse(
@@ -213,8 +212,8 @@ async def view_map(
         name="map.html",
         context={
             "user": user,
-            "restaurants": all_restaurants,  # Pass all restaurants
-            "selected_restaurant_id": restaurant_id  # Pass which one to highlight
+            "restaurants": all_restaurants, 
+            "selected_restaurant_id": restaurant_id 
         }
     )
 
@@ -223,7 +222,7 @@ async def view_map(
 async def add_to_order(
     request: Request,
     menu_item_id: int,
-    user: OptionalUser,  # Changed from AuthDep to OptionalUser
+    user: OptionalUser,
     db: SessionDep,
     quantity: int = Form(...)
 ):
@@ -231,12 +230,9 @@ async def add_to_order(
     if not menu_item:
         raise HTTPException(status_code=404, detail="Menu item not found")
     
-    # For guest users, store cart in session
     if not user:
-        # Get or create guest cart in session
         guest_cart = request.session.get("guest_cart", [])
         
-        # Check if item already in cart
         found = False
         for item in guest_cart:
             if item["menu_item_id"] == menu_item_id:
@@ -262,7 +258,6 @@ async def add_to_order(
             status_code=status.HTTP_303_SEE_OTHER
         )
     
-    # For logged-in users, use database
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
@@ -306,7 +301,6 @@ async def view_cart(
     items_by_place = {}
     grand_total = 0.0
     
-    # Handle guest cart from session
     if not user:
         guest_cart = request.session.get("guest_cart", [])
         
@@ -314,9 +308,7 @@ async def view_cart(
             place_name = item.get("restaurant_name", "Unknown Place")
             
             if place_name not in items_by_place:
-                # Get real phone from database for guest cart too
                 restaurant = db.get(Restaurant, item.get("restaurant_id"))
-                # Safely get phone attribute, handle if column doesn't exist
                 phone = None
                 if restaurant:
                     try:
@@ -354,7 +346,6 @@ async def view_cart(
             }
         )
     
-    # Handle logged-in user cart from database
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
@@ -376,7 +367,6 @@ async def view_cart(
             place_name = restaurant.name if restaurant else "Unknown Place"
 
             if place_name not in items_by_place:
-                # Safely get phone attribute
                 phone = None
                 if restaurant:
                     try:
@@ -452,15 +442,13 @@ async def campus_map_view(
 @router.post("/cart/clear")
 async def clear_cart(
     request: Request,
-    user: OptionalUser,  # Changed from AuthDep to OptionalUser
+    user: OptionalUser,
     db: SessionDep
 ):
-    # Handle guest cart
     if not user:
         request.session["guest_cart"] = []
         return JSONResponse({"success": True, "message": "Cart cleared successfully"})
     
-    # Handle logged-in user
     order = db.exec(
         select(Order).where(
             Order.user_id == user.id,
@@ -489,14 +477,12 @@ async def remove_cart_item(
     user: OptionalUser,
     db: SessionDep
 ):
-    # Handle guest cart removal
     if not user:
         guest_cart = request.session.get("guest_cart", [])
         guest_cart = [item for item in guest_cart if item.get("menu_item_id") != item_id]
         request.session["guest_cart"] = guest_cart
         return JSONResponse({"success": True, "message": "Item removed from cart"})
     
-    # Handle logged-in user removal
     order_item = db.get(OrderItem, item_id)
     if order_item:
         db.delete(order_item)
@@ -513,22 +499,17 @@ async def change_cart_item_quantity(
     delta: int = Query(0),
     new_quantity: int = Query(0)
 ):
-    # Handle guest cart
     if not user:
         guest_cart = request.session.get("guest_cart", [])
         
         for idx, item in enumerate(guest_cart):
             if item.get("menu_item_id") == item_id:
                 if new_quantity > 0:
-                    # Set to specific quantity
                     item["quantity"] = new_quantity
                 elif delta != 0:
-                    # Change by delta amount
                     item["quantity"] += delta
                 else:
                     return JSONResponse({"success": False, "message": "Invalid operation"}, status_code=400)
-                
-                # Remove item if quantity becomes 0 or less
                 if item["quantity"] <= 0:
                     guest_cart.pop(idx)
                 break
@@ -536,14 +517,11 @@ async def change_cart_item_quantity(
         request.session["guest_cart"] = guest_cart
         return JSONResponse({"success": True, "message": "Quantity updated"})
     
-    # Handle logged-in user
     order_item = db.get(OrderItem, item_id)
     if order_item:
         if new_quantity > 0:
-            # Set to specific quantity
             order_item.quantity = new_quantity
         elif delta != 0:
-            # Change by delta amount
             order_item.quantity += delta
         else:
             return JSONResponse({"success": False, "message": "Invalid operation"}, status_code=400)

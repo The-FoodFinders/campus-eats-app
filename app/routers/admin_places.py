@@ -154,7 +154,7 @@ async def admin_menu_create(
         restaurant_id=place_id
     )
     repo.create(new_item)
-    flash(request, f"✅ {name} added to menu!", "success")
+    flash(request, f"{name} added to menu!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
 
 @admin_router.get("/places/{place_id}/menu/{item_id}/edit", response_class=HTMLResponse)
@@ -214,7 +214,6 @@ async def admin_menu_toggle_availability(
     flash(request, f"Menu item '{item.name}' has been {status_text}!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
 
-# ====================== REVIEWS MODERATION ======================
 
 @admin_router.get("/reviews", response_class=HTMLResponse, name="admin_reviews")
 async def admin_reviews_list(request: Request, user: AdminDep, db: SessionDep):
