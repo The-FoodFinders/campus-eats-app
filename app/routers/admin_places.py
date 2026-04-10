@@ -13,6 +13,14 @@ from sqlmodel import select
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
+from datetime import timezone
+from zoneinfo import ZoneInfo
+
+def to_tt(dt):
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc) 
+    return dt.astimezone(ZoneInfo("America/Port_of_Spain"))
+
 # ====================== PLACES ======================
 
 @admin_router.get("/places", response_class=HTMLResponse, name="admin_places_list")
@@ -79,7 +87,8 @@ async def admin_place_update(
     location: str = Form(),
     description: str = Form(default=""),
     latitude: float = Form(),
-    longitude: float = Form()
+    longitude: float = Form(),
+    phone: str = Form(default="")
 ):
     repo = RestaurantRepository(db)
     updated = repo.update(place_id, {
@@ -87,7 +96,8 @@ async def admin_place_update(
         "location": location,
         "description": description,
         "latitude": latitude,
-        "longitude": longitude
+        "longitude": longitude,
+        "phone": phone
     })
     flash(request, f"{name} updated successfully!", "success")
     return RedirectResponse(url=request.url_for("admin_places_list"), status_code=status.HTTP_303_SEE_OTHER)
@@ -251,7 +261,8 @@ async def admin_reviews_list(request: Request, user: AdminDep, db: SessionDep):
         name="admin/reviews.html",
         context={
             "user": user,
-            "reviews": reviews
+            "reviews": reviews,
+            "to_tt": to_tt
         }
     )
 

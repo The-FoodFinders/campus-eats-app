@@ -45,7 +45,7 @@
                     <span class="ms-2 text-muted">({{ review.rating }})</span>
                 </td>
                 <td>{{ review.comment or '—' }}</td>
-                <td>{{ review.created_at.strftime('%d %b %Y %H:%M') }}</td>
+                <td>{{ to_tt(review.created_at).strftime('%d %b %Y %H:%M') }}</td>
                 <td>
                     <form method="POST" action="/admin/reviews/{{ review.id }}/delete" style="display:inline;">
                         <button type="submit" class="btn btn-sm btn-danger"
