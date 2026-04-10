@@ -12,6 +12,14 @@ from app.schemas.user import AdminCreate, RegularUserCreate
 
 app = typer.Typer()
 
+user_app = typer.Typer()
+restaurant_app = typer.Typer()
+menu_app = typer.Typer()
+
+app.add_typer(user_app, name="user")
+app.add_typer(restaurant_app, name="restaurant")
+app.add_typer(menu_app, name="menu")
+
 @app.command()
 def initialize():
     with get_cli_session() as db:
@@ -194,79 +202,47 @@ def initialize():
         
         print("Database Initialized with all 24 UWI campus food vendors!")
 
-@app.command()
+@user_app.command("create")
+def create_user(username: str, email: str, password: str, role: str = "regular_user"):
+    with get_cli_session() as db:
+        user = User(username=username, email=email, password=password, role=role)
+        db.add(user)
+        db.commit()
+        typer.echo(f"Created user: {username}")
+
+@user_app.command("list")
 def list_users():
     with get_cli_session() as db:
-        repo = UserRepository(db)
-        users = repo.get_all_users()
-        if not users:
-            print("No users found.")
-            return
-        
-        table_data = [[user.id, user.username, user.role, user.email] for user in users]
-        print(tabulate(table_data, headers=["ID", "Username", "Role", "Email"], tablefmt="grid"))
+        users = db.exec(select(User)).all()
 
-@app.command()
-def test_create_user():
-    with get_cli_session() as db:
-        user = User(username="test", email="test@test.com", password="123", role="regular_user")
-        db.add(user)
-        db.commit()
-        print("Test user created")
+        table = [[u.id, u.username, u.email, u.role] for u in users]
+        typer.echo(tabulate(table, headers=["ID", "Username", "Email", "Role"]))
 
-@app.command()
-def update_user(user_id: int, username: str = None, email: str = None, role: str = None):
+@user_app.command("delete")
+def delete_user(user_id: int, confirm: bool = False):
+    if not confirm:
+        typer.echo("Add --confirm to delete")
+        return
+
     with get_cli_session() as db:
         user = db.get(User, user_id)
 
         if not user:
-            print("User not found")
-            return
-
-        if username:
-            user.username = username
-        if email:
-            user.email = email
-        if role:
-            user.role = role
-
-        db.add(user)
-        db.commit()
-
-        print(f"User {user_id} updated successfully")
-
-@app.command()
-def delete_user(user_id: int):
-    with get_cli_session() as db:
-        user = db.get(User, user_id)
-
-        if not user:
-            print("User not found")
+            typer.echo("User not found")
             return
 
         db.delete(user)
         db.commit()
+        typer.echo(f"Deleted user {user_id}")
 
-        print(f"User {user_id} deleted successfully")
 
-@app.command()
-def test_create_foodplace():
-    with get_cli_session() as db:
-        restaurant = Restaurant(name="Test Restaurant", location="Test location", description="Test description lol", latitude=100, longitude=200, category="Test cat", phone="4684486")
-        db.add(restaurant)
-        db.commit()
-        print("Test restaurant created")
-
-@app.command()
-def list_foodplaces():
+@restaurant_app.command("list")
+def list_restaurants():
     with get_cli_session() as db:
         restaurants = db.exec(select(Restaurant)).all()
-        if not restaurants:
-            print("No restaurants found")
-            return
-        
-        table_data = [[restaurants.id, restaurants.name, restaurants.location, restaurants.description, restaurants.latitude, restaurants.longitude, restaurants.category, restaurants.phone] for restaurants in restaurants]
-        print(tabulate(table_data, headers=["ID", "name", "location", "description", "latitude", "longitude", "category", "phone"], tablefmt="grid"))
+
+        table = [[r.id, r.name, r.location] for r in restaurants]
+        typer.echo(tabulate(table, headers=["ID", "Name", "Location"]))
 
 @app.command()
 def update_restaurant(restaurant_id: int, name: str = None, location: str = None, description: str = None, phone: str = None):
@@ -291,75 +267,48 @@ def update_restaurant(restaurant_id: int, name: str = None, location: str = None
 
         print(f"Restaurant {restaurant_id} updated successfully")
 
-@app.command()
-def delete_restaurant(restaurant_id: int):
-    with get_cli_session() as db:
-        restaurant = db.get(Restaurant, restaurant_id)
+@restaurant_app.command("delete")
+def delete_restaurant(restaurant_id: int, confirm: bool = False):
+    if not confirm:
+        typer.echo("Add --confirm to delete")
+        return
 
-        if not restaurant:
-            print("Restaurant not found")
+    with get_cli_session() as db:
+        r = db.get(Restaurant, restaurant_id)
+
+        if not r:
+            typer.echo("Restaurant not found")
             return
 
-        db.delete(restaurant)
+        db.delete(r)
         db.commit()
+        typer.echo(f"Deleted restaurant {restaurant_id}")
 
-        print(f"Restaurant {restaurant_id} deleted successfully")
 
-@app.command()
-def test_create_menuitem():
-    with get_cli_session() as db:
-        item = MenuItem(name="Test item", price=2.05, description="Test description lol", is_available=True, restaurant_id=1)
-        db.add(item)
-        db.commit()
-        print("Test item created")
+@menu_app.command("delete")
+def delete_menu_item(item_id: int, confirm: bool = False):
+    if not confirm:
+        typer.echo("Add --confirm to delete")
+        return
 
-@app.command()
-def update_menu_item(item_id: int, name: str = None, price: float = None, description: str = None, is_available: bool = None):
     with get_cli_session() as db:
         item = db.get(MenuItem, item_id)
 
         if not item:
-            print("Menu item not found")
-            return
-
-        if name:
-            item.name = name
-        if price is not None:
-            item.price = price
-        if description:
-            item.description = description
-        if is_available is not None:
-            item.is_available = is_available
-
-        db.add(item)
-        db.commit()
-
-        print(f"Menu item {item_id} updated successfully")
-
-@app.command()
-def delete_menu_item(item_id: int):
-    with get_cli_session() as db:
-        item = db.get(MenuItem, item_id)
-
-        if not item:
-            print("Menu item not found")
+            typer.echo("Item not found")
             return
 
         db.delete(item)
         db.commit()
+        typer.echo(f"Deleted menu item {item_id}")
 
-        print(f"Menu item {item_id} deleted successfully")
-
-@app.command()
-def list_menuitems():
+@menu_app.command("list")
+def list_menu():
     with get_cli_session() as db:
         items = db.exec(select(MenuItem)).all()
-        if not items:
-            print("No items found")
-            return
-        
-        table_data = [[i.id, i.name, i.price, i.description, i.is_available, i.restaurant_id] for i in items]
-        print(tabulate(table_data, headers=["ID", "name", "price", "description", "is_available", "restaurant_id"], tablefmt="grid"))
+
+        table = [[i.id, i.name, i.price, i.restaurant_id] for i in items]
+        typer.echo(tabulate(table, headers=["ID", "Name", "Price", "Restaurant"]))
 
 if __name__ == "__main__":
     app()

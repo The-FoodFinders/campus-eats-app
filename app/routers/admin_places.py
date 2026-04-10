@@ -214,6 +214,28 @@ async def admin_menu_toggle_availability(
     flash(request, f"Menu item '{item.name}' has been {status_text}!", "success")
     return RedirectResponse(url=f"/admin/places/{place_id}/menu", status_code=status.HTTP_303_SEE_OTHER)
 
+@admin_router.post("/places/{place_id}/menu/{item_id}/delete")
+async def admin_menu_delete(
+    request: Request,
+    place_id: int,
+    item_id: int,
+    db: SessionDep
+):
+
+    item = db.get(MenuItem, item_id)
+
+    if not item or item.restaurant_id != place_id:
+        flash(request, "Menu item not found", "danger")
+        return RedirectResponse(
+            url=f"/admin/places/{place_id}/menu",
+            status_code=status.HTTP_303_SEE_OTHER
+        ) 
+
+    db.delete(item)
+    db.commit()
+
+    flash(request, f"'{item.name}' deleted successfully!", "success")
+    return RedirectResponse(url=f"/admin/places/{place_id}/menu",status_code=status.HTTP_303_SEE_OTHER)
 
 @admin_router.get("/reviews", response_class=HTMLResponse, name="admin_reviews")
 async def admin_reviews_list(request: Request, user: AdminDep, db: SessionDep):
