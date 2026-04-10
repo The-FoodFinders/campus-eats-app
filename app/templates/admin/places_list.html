@@ -24,17 +24,19 @@
                     </span>
                     {% endif %}
                 </div>
-                <div class="card-footer bg-white border-0 d-flex gap-2">
-                    <a href="{{ url_for('admin_menu_list', place_id=place.id) }}" 
-                       class="btn btn-sm btn-success flex-fill">Manage Menu</a>
-                    <a href="{{ url_for('admin_place_edit_form', place_id=place.id) }}" 
-                       class="btn btn-sm btn-warning flex-fill">Edit</a>
-                    <form method="POST" action="/admin/places/{{ place.id }}/delete" style="display:inline;">
-                        <button type="submit" class="btn btn-sm btn-danger flex-fill" 
-                                onclick="return confirm('Delete this place and all its menu items?')">
-                            Delete
-                        </button>
-                    </form>
+                <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('admin_menu_list', place_id=place.id) }}" 
+                           class="btn btn-sm btn-success flex-fill">Manage Menu</a>
+                        <a href="{{ url_for('admin_place_edit_form', place_id=place.id) }}" 
+                           class="btn btn-sm btn-warning flex-fill">Edit</a>
+                        <form method="POST" action="/admin/places/{{ place.id }}/delete" style="display:inline; flex: 1;">
+                            <button type="submit" class="btn btn-sm btn-danger w-100" 
+                                    onclick="return confirm('Delete this place and all its menu items?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
