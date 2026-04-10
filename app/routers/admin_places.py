@@ -50,7 +50,9 @@ async def admin_place_create(
     location: str = Form(),
     description: str = Form(default=""),
     latitude: float = Form(),
-    longitude: float = Form()
+    longitude: float = Form(),
+    category: str = Form(),
+    phone: str = Form(default="")
 ):
     repo = RestaurantRepository(db)
     new_place = Restaurant(
@@ -58,7 +60,9 @@ async def admin_place_create(
         location=location,
         description=description,
         latitude=latitude,
-        longitude=longitude
+        longitude=longitude,
+        category=category,
+        phone=phone
     )
     repo.create(new_place)
     flash(request, f"✅ {name} created successfully!", "success")
