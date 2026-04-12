@@ -99,14 +99,14 @@ def initialize():
             MenuItem(name="Fresh Orange Juice", price=18.0, description="Freshly squeezed orange juice", is_available=True, restaurant_id=pid("La Bloom Café")),
             #Vending Machine (ice-cream)
             MenuItem(name="Hola Kola", price=8.0, description="Classic Flavorite fruit lolly in refreshing cola and tropical flavours — a Trini childhood favourite", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
-            MenuItem(name="Likka Stik", price=12.0, description="Creamy flavoured ice lolly on a stick — smooth, sweet and loved by generations of Trinidadians", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
+            MenuItem(name="Likka Stik", price=12.0, description="Creamy flavoured ice lolly on a stick — smooth, sweet and loved by generations of Trinidadians", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Milkies", price=8.0, description="Soft and creamy milk-based frozen treat — light, smooth and perfect for a quick cool down", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Freezies", price=6.0, description="Colourful fruit flavoured ice in a squeeze tube — the ultimate affordable campus refresher", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Dark N Gold", price=15.0, description="Smooth dark chocolate and golden vanilla ice cream on a stick — a beloved Trini classic", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Double Dark", price=15.0, description="Rich double chocolate ice cream bar for the true chocolate lover — bold, creamy and indulgent", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Nutty Royale Lollie", price=15.0, description="Vanilla ice cream bar coated in a crunchy chocolate and nut shell — an iconic Flavorite treat", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
-            MenuItem(name="Nutty Royale Cone", price=18.0, description="Crispy waffle cone filled with vanilla ice cream and topped with chocolate and crushed nuts", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
-            MenuItem(name="Screwball", price=12.0, description="Fruity spiral ice cream in a cup with a bubblegum surprise at the bottom — a fun Trini classic", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
+            MenuItem(name="Nutty Royale Cone", price=18.0, description="Crispy waffle cone filled with vanilla ice cream and topped with chocolate and crushed nuts", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
+            MenuItem(name="Screwball", price=12.0, description="Fruity spiral ice cream in a cup with a bubblegum surprise at the bottom — a fun Trini classic", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Ice Cream Sandwich", price=13.0, description="Creamy vanilla ice cream pressed between two soft chocolate wafer biscuits", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             # Caribbean Natural Juices
             MenuItem(name="Lime Juice", price=12.0, description="Freshly squeezed lime juice, sweetened to taste", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
