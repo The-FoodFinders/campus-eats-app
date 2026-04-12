@@ -21,6 +21,25 @@
                    value="{{ place.location if place else '' }}" required>
         </div>
         <div class="mb-3">
+            <label class="form-label">Category (Location Area)</label>
+            <select name="category" class="form-control" required>
+                <option value="">-- Select Category --</option>
+
+                <option value="SAC" {{ 'selected' if place and place.category == 'SAC' else '' }}>SAC</option>
+                <option value="JFK" {{ 'selected' if place and place.category == 'JFK' else '' }}>JFK</option>
+                <option value="JFK Food Court" {{ 'selected' if place and place.category == 'JFK Food Court' else '' }}>JFK Food Court</option>
+                <option value="School of Education" {{ 'selected' if place and place.category == 'School of Education' else '' }}>School of Education</option>
+                <option value="Language & Learning" {{ 'selected' if place and place.category == 'Language & Learning' else '' }}>Language & Learning</option>
+                <option value="Dudley Huggins" {{ 'selected' if place and place.category == 'Dudley Huggins' else '' }}>Dudley Huggins</option>
+                <option value="Staff Social Club Area" {{ 'selected' if place and place.category == 'Staff Social Club Area' else '' }}>Staff Social Club Area</option>
+                <option value="Republic Bank Plaza" {{ 'selected' if place and place.category == 'Republic Bank Plaza' else '' }}>Republic Bank Plaza</option>
+                <option value="Halls of Residence" {{ 'selected' if place and place.category == 'Halls of Residence' else '' }}>Halls of Residence</option>
+                <option value="Teaching & Learning Centre" {{ 'selected' if place and place.category == 'Teaching & Learning Centre' else '' }}>Teaching & Learning Centre</option>
+                <option value="Vending" {{ 'selected' if place and place.category == 'Vending' else '' }}>Vending</option>
+                <option value="Couva" {{ 'selected' if place and place.category == 'Couva' else '' }}>Couva</option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label class="form-label">Description</label>
             <textarea name="description" class="form-control" rows="3">{{ place.description if place else '' }}</textarea>
         </div>

@@ -113,12 +113,13 @@
 <script>
     const map = L.map('map').setView([10.6424, -61.4005], 16);
 
-    L.tileLayer.wms('https://geoserver.sundaebytestt.com/geoserver/osm/wms', {
-        layers: 'osm:osm_nohouse',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0'
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
+
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
 
     const greenPin = L.divIcon({
         className: 'custom-green-pin',
