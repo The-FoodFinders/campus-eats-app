@@ -175,6 +175,8 @@ def initialize():
             MenuItem(name="Soft Drink (Medium)", price=18.0, description="Pepsi, 7-Up or Mirinda — medium size", is_available=True, restaurant_id=pid("KFC")),
             MenuItem(name="Krunch Twist", price=29.95, description="Crispy KFC chicken fillet twisted in a soft tortilla wrap with fresh lettuce and creamy mayo", is_available=True, restaurant_id=pid("KFC")),
             MenuItem(name="Krunch Twist Combo", price=39.95, description="Krunch Twist wrap paired with a side of fries and a medium drink for the full meal experience", is_available=True, restaurant_id=pid("KFC")),
+            MenuItem(name="Mac & Cheese", price=20.0, description="Creamy KFC macaroni and cheese in a regular portion", is_available=True, restaurant_id=pid("KFC")),
+            MenuItem(name="Mash & Gravy", price=18.0, description="Smooth mashed potatoes topped with rich KFC gravy", is_available=True, restaurant_id=pid("KFC")),
             # Subway
             MenuItem(name="Italian BMT (6-inch)", price=55.0, description="Pepperoni, salami and ham on Italian bread with your choice of toppings", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Chicken Teriyaki (Footlong)", price=85.0, description="Teriyaki chicken strip sub on honey oat bread", is_available=True, restaurant_id=pid("Subway")),
