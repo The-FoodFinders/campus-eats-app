@@ -182,6 +182,8 @@ def initialize():
             MenuItem(name="Chicken Teriyaki (Footlong)", price=85.0, description="Teriyaki chicken strip sub on honey oat bread", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Veggie Delite (6-inch)", price=45.0, description="Fresh garden vegetables on your choice of bread", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Cookies (3 pack)", price=20.0, description="Freshly baked Subway cookies — chocolate chip or macadamia nut", is_available=True, restaurant_id=pid("Subway")),
+            MenuItem(name="Philly Cheese Steak (6-inch)", price=45.0, description="Steak, green peppers, onions, double American cheese and mayo on toasted bread", is_available=True, restaurant_id=pid("Subway")),
+            MenuItem(name="Philly Cheese Steak (Footlong)", price=75.0, description="Steak, green peppers, onions, double American cheese and mayo on toasted footlong bread", is_available=True, restaurant_id=pid("Subway")),
             # Benny's BBQ & Burgers
             MenuItem(name="BBQ Burger", price=60.0, description="Beef patty with smoky BBQ sauce, cheddar and caramelised onions", is_available=True, restaurant_id=pid("Benny's BBQ & Burgers")),
             MenuItem(name="Smoked BBQ Ribs", price=90.0, description="Slow-smoked pork ribs glazed with house BBQ sauce", is_available=True, restaurant_id=pid("Benny's BBQ & Burgers")),
