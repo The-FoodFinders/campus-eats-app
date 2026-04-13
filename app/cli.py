@@ -108,6 +108,12 @@ def initialize():
             MenuItem(name="Nutty Royale Cone", price=18.0, description="Crispy waffle cone filled with vanilla ice cream and topped with chocolate and crushed nuts", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Screwball", price=12.0, description="Fruity spiral ice cream in a cup with a bubblegum surprise at the bottom — a fun Trini classic", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Ice Cream Sandwich", price=13.0, description="Creamy vanilla ice cream pressed between two soft chocolate wafer biscuits", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
+            #Mini Mart (SAC)
+            MenuItem(name="Pringles (Original)", price=25.0, description="Classic original flavour Pringles potato crisps", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Cheetos", price=18.0, description="Crunchy cheesy corn puffs", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Crix Crackers", price=10.0, description="Iconic Trinidadian cream crackers", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Shirley Biscuits", price=8.0, description="Classic sweet Trinidadian biscuits", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Chips Ahoy", price=18.0, description="Classic chocolate chip cookies in a snack pack", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             # Caribbean Natural Juices
             MenuItem(name="Lime Juice", price=12.0, description="Freshly squeezed lime juice, sweetened to taste", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Passion Fruit Juice", price=15.0, description="Fresh passion fruit blended with water and sugar", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
