@@ -10,8 +10,7 @@
         color: #ccc; 
         font-size: 1.1rem; 
     }
-    
-    /* Desktop table view */
+
     @media (min-width: 769px) {
         .reviews-table-container {
             display: block;
@@ -35,8 +34,7 @@
             vertical-align: middle;
         }
     }
-    
-    /* Mobile card view */
+  
     @media (max-width: 768px) {
         .reviews-table-container {
             display: none;
@@ -114,8 +112,7 @@
             font-size: 0.85rem;
             padding: 0.5rem;
         }
-        
-        /* Star ratings on mobile */
+
         .star, .star-empty {
             font-size: 1rem;
         }
@@ -126,8 +123,7 @@
             color: #6c757d;
         }
     }
-    
-    /* Small mobile devices */
+
     @media (max-width: 480px) {
         .container {
             padding-left: 0.75rem;
@@ -154,8 +150,7 @@
             font-size: 0.85rem;
         }
     }
-    
-    /* Header responsive */
+  
     .header-section {
         display: flex;
         justify-content: space-between;
@@ -181,7 +176,6 @@
         }
     }
     
-    /* Empty state */
     .empty-state {
         text-align: center;
         padding: 3rem 1rem;
@@ -195,13 +189,11 @@
         margin-bottom: 1rem;
     }
     
-    /* Back button */
     .back-btn {
         margin-bottom: 1rem;
         display: inline-block;
     }
-    
-    /* Table styles for desktop */
+
     .reviews-table th {
         background-color: #f8f9fa;
         font-weight: 600;
@@ -235,7 +227,6 @@
     </div>
 
     {% if reviews %}
-        <!-- Desktop Table View -->
         <div class="reviews-table-container">
             <div class="table-responsive">
                 <table class="table table-striped table-hover reviews-table">
@@ -285,7 +276,6 @@
             </div>
         </div>
 
-        <!-- Mobile Card View -->
         <div class="reviews-cards-container">
             {% for review, restaurant_name, username in reviews %}
             <div class="review-card">
