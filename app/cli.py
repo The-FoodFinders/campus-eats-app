@@ -114,6 +114,11 @@ def initialize():
             MenuItem(name="Crix Crackers", price=10.0, description="Iconic Trinidadian cream crackers", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Shirley Biscuits", price=8.0, description="Classic sweet Trinidadian biscuits", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Chips Ahoy", price=18.0, description="Classic chocolate chip cookies in a snack pack", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Solo (Soft Drink)", price=12.0, description="Chilled Solo soft drink in assorted Trinidadian flavours — orange, grape or cream soda", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Coconut Water (can)", price=15.0, description="Natural coconut water in a can — refreshing and hydrating", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Milo (can)", price=18.0, description="Chilled canned Milo chocolate milk drink", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Fresh Start Juice", price=10.0, description="Assorted fruit juices in various flavours", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
+            MenuItem(name="Bottled Water", price=8.0, description="Chilled 500ml bottled water — refreshing and essential for campus life", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             # Caribbean Natural Juices
             MenuItem(name="Lime Juice", price=12.0, description="Freshly squeezed lime juice, sweetened to taste", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Passion Fruit Juice", price=15.0, description="Fresh passion fruit blended with water and sugar", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
