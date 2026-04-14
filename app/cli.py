@@ -46,30 +46,25 @@ def initialize():
         db.commit()
 
         places = [
-            Restaurant(name="Dee & Vees", location="School of Education Compound", description="Authentic Creole food vendor serving hearty local Trinidadian meals.", latitude=10.6418, longitude=-61.3963, category="School of Education", phone="Unknown"),
-            Restaurant(name="La Bloom Café", location="Centre for Language and Learning", description="Coffee, drinks and a variety of food items. A great spot to recharge between classes.", latitude=10.6427, longitude=-61.3978, category="Language & Learning", phone="Unknown"),
-            Restaurant(name="Vending Machine (Ice Cream)", location="Student Activity Centre (SAC) Ground Floor", description="Ice cream and lollies vending machine. Quick sweet treats between classes.", latitude=10.6424, longitude=-61.3990, category="SAC", phone="Unknown"),
-            Restaurant(name="Caribbean Natural Juices", location="Student Activity Centre (SAC) Ground Floor", description="Fresh squeezed juices and natural beverages made from local fruits.", latitude=10.6424, longitude=-61.3991, category="SAC", phone="Unknown"),
-            Restaurant(name="Celes and Son Home-style Cooking", location="Student Activity Centre (SAC) Ground Floor", description="Creole home-style cooking with hearty local dishes at student-friendly prices.", latitude=10.6423, longitude=-61.3992, category="SAC", phone="+1868-663-6183"),
-            Restaurant(name="Maureen's Cuisine", location="Student Activity Centre (SAC) Ground Floor", description="Serving pies, sandwiches and snacks. A popular stop for a quick bite.", latitude=10.6423, longitude=-61.3993, category="SAC", phone="Unknown"),
-            Restaurant(name="Oriental Cuisine", location="Student Activity Centre (SAC) Ground Floor", description="Chinese food served fresh daily. Popular for fried rice, chow mein and more.", latitude=10.6422, longitude=-61.3991, category="SAC", phone="Unknown"),
-            Restaurant(name="Lee's Doubles", location="Student Activity Centre (SAC) Ground Floor", description="Classic Trini doubles and street food. A campus favourite for breakfast and lunch.", latitude=10.6422, longitude=-61.3990, category="SAC", phone="Unknown"),
-            Restaurant(name="Juman's Roti Shop", location="Student Activity Centre (SAC) 2nd Floor", description="Authentic Trini roti — dhalpuri and paratha with a variety of curries.", latitude=10.6424, longitude=-61.3989, category="SAC", phone="+1868-645-5104"),
-            Restaurant(name="Veg & More", location="Close to Student Activity Centre (SAC)", description="Pies, pastries and drinks. Great vegetarian-friendly options on campus.", latitude=10.6421, longitude=-61.3988, category="SAC", phone="+1868-769-4424"),
-            Restaurant(name="Mini Mart (SAC)", location="Student Activities Centre", description="Campus convenience store stocking snacks, drinks and everyday essentials.", latitude=10.6423, longitude=-61.3987, category="SAC", phone="Unknown"),
-            Restaurant(name="Mini Mart (SAL Hall)", location="SAL Hall", description="Convenient store near SAL Hall with snacks, beverages and daily necessities.", latitude=10.6432, longitude=-61.3985, category="Halls of Residence", phone="Unknown"),
-            Restaurant(name="Pita Pit", location="JFK Quadrangle", description="Wraps, paninis and pita pockets with fresh fillings. A healthy and tasty choice.", latitude=10.6430, longitude=-61.3999, category="JFK", phone="+1868-285-7482"),
-            Restaurant(name="Rituals Coffee House", location="JFK Quadrangle", description="Premium coffee, teas, cold drinks and food items. The campus coffee hotspot.", latitude=10.6431, longitude=-61.4000, category="JFK", phone="+1868-225-5125"),
-            Restaurant(name="Linda's", location="JFK Quadrangle", description="Freshly baked pastries, salads, breads and natural juices. A campus institution.", latitude=10.6429, longitude=-61.3998, category="JFK", phone="+1868-280-2350"),
-            Restaurant(name="Ave 5055", location="JFK Quadrangle", description="Desserts, sweet treats and indulgent snacks to satisfy your sweet tooth.", latitude=10.6430, longitude=-61.3997, category="JFK", phone="Unknown"),
-            Restaurant(name="The Gourmet Pot", location="Dudley Huggins Building", description="Contemporary cuisine with diverse menu options. Elevated campus dining.", latitude=10.6435, longitude=-61.4008, category="Dudley Huggins", phone="+1868-610-9768"),
-            Restaurant(name="KFC", location="JFK Food Court", description="Kentucky Fried Chicken — fries, chicken and combos from the globally loved brand.", latitude=10.6428, longitude=-61.4003, category="JFK Food Court", phone="+1868-225-4532"),
-            Restaurant(name="Subway", location="JFK Food Court", description="Sub sandwiches made to order with fresh bread, proteins and toppings.", latitude=10.6428, longitude=-61.4004, category="JFK Food Court", phone="+1868-226-7874"),
-            Restaurant(name="Benny's BBQ & Burgers", location="Car Park next to Staff Social Club", description="Burgers and BBQ done right. Smoky flavours with generous portions.", latitude=10.6412, longitude=-61.4010, category="Staff Social Club Area", phone="+1868-704-0400"),
-            Restaurant(name="Boba and Brew Café", location="Republic Bank Plaza – UWI", description="Pastries, smoothies and ice cream. A trendy café spot on campus.", latitude=10.6440, longitude=-61.3980, category="Republic Bank Plaza", phone="+1868-615-8222"),
-            Restaurant(name="Blue Waters Vending", location="Main Campus & School of Education", description="Blue Waters vending machines offering chilled beverages across campus.", latitude=10.6425, longitude=-61.3975, category="Vending", phone="Unknown"),
-            Restaurant(name="Al Mohammed on the Link Up", location="Teaching and Learning Centre", description="Burgers and sandwiches served near the Teaching and Learning Centre.", latitude=10.6433, longitude=-61.3995, category="Teaching & Learning Centre", phone="Unknown"),
-            Restaurant(name="Snack Machine (Couva)", location="Couva Facilities", description="Snack vending machine at the Couva campus facility.", latitude=10.5890, longitude=-61.4200, category="Couva", phone="Unknown"),
+            Restaurant(name="Dee & Vees", location="School of Education Compound", description="Authentic Creole food vendor serving hearty local Trinidadian meals.", latitude=10.64664, longitude=-61.40291, category="School of Education", phone="Unknown"),
+            Restaurant(name="La Bloom Café", location="Centre for Language and Learning", description="Coffee, drinks and a variety of food items. A great spot to recharge between classes.", latitude=10.64259, longitude=-61.39870, category="Language & Learning", phone="Unknown"),
+            Restaurant(name="Vending Machine (Drinks)", location="Student Activity Centre (SAC) Ground Floor", description="Assorted drinks of all varieties. Quick pick me ups between classes.", latitude=10.63937, longitude=-61.39763, category="SAC", phone="Unknown"),
+            Restaurant(name="Just Juiced", location="Student Activity Centre (SAC) Ground Floor", description="Fresh squeezed juices and natural beverages made from local fruits.", latitude=10.63947, longitude=-61.39771, category="SAC", phone="Unknown"),
+            Restaurant(name="Oriental Cuisine", location="Student Activity Centre (SAC) Ground Floor", description="Chinese food served fresh daily. Popular for fried rice, chow mein and more.", latitude=10.63970, longitude=-61.39785, category="SAC", phone="Unknown"),
+            Restaurant(name="Panks Sweet Sauce Doubles", location="Student Activity Centre (SAC) Ground Floor", description="Classic Trini doubles and street food. A campus favourite for breakfast and lunch.", latitude=10.63931, longitude=-61.39800, category="SAC", phone="Unknown"),
+            Restaurant(name="Juman's Roti Shop", location="Student Activity Centre (SAC) 2nd Floor", description="Authentic Trini roti — dhalpuri and paratha with a variety of curries.", latitude=10.63967, longitude=-61.39767, category="SAC", phone="+1868-645-5104"),
+            Restaurant(name="Veg Out", location="Close to Student Activity Centre (SAC)", description="Pies, pastries and drinks. Great vegetarian-friendly options on campus.", latitude=10.63919, longitude=-61.39786, category="SAC", phone="+1868-769-4424"),
+            Restaurant(name="Campus Mini Mart", location="Student Activities Centre", description="Campus convenience store stocking snacks, drinks and everyday essentials.", latitude=10.63926, longitude=-61.39784, category="SAC", phone="Unknown"),
+            Restaurant(name="Bago Thingz", location="SAL Hall", description="Desserts and sweet treats near the dormitories.", latitude=10.64997, longitude=-61.39553, category="Halls of Residence", phone="Unknown"),
+            Restaurant(name="Pita Pit", location="JFK Quadrangle", description="Wraps, paninis and pita pockets with fresh fillings. A healthy and tasty choice.", latitude=10.63893, longitude=-61.39870, category="JFK", phone="+1868-285-7482"),
+            Restaurant(name="Rituals Coffee House", location="JFK Quadrangle", description="Premium coffee, teas, cold drinks and food items. The campus coffee hotspot.", latitude=10.63888, longitude=-61.39869, category="JFK", phone="+1868-225-5125"),
+            Restaurant(name="Linda's Bakery", location="JFK Quadrangle", description="Freshly baked pastries, salads, breads and natural juices. A campus institution.", latitude=10.63865, longitude=-61.39858, category="JFK", phone="+1868-280-2350"),
+            Restaurant(name="The Gourmet Pot", location="Dudley Huggins Building", description="Contemporary cuisine with diverse menu options. Elevated campus dining.", latitude=10.64507, longitude=-61.40038, category="Dudley Huggins", phone="+1868-610-9768"),
+            Restaurant(name="KFC", location="JFK Food Court", description="Fries, chicken and combos from the globally loved brand.", latitude=10.63910, longitude=-61.39821, category="JFK Food Court", phone="+1868-225-4532"),
+            Restaurant(name="Subway", location="JFK Food Court", description="Sub sandwiches made to order with fresh bread, proteins and toppings.", latitude=10.63916, longitude=-61.39832, category="JFK Food Court", phone="+1868-226-7874"),
+            Restaurant(name="Benny's BBQ & Burgers", location="Car Park next to Staff Social Club", description="Burgers and BBQ done right. Smoky flavours with generous portions.", latitude=10.64588, longitude=-61.40231, category="Staff Social Club Area", phone="+1868-704-0400"),
+            Restaurant(name="Boba and Brew Café", location="Republic Bank Plaza – UWI", description="Pastries, smoothies and ice cream. A trendy café spot on campus.", latitude=10.64567, longitude=-61.40109, category="Republic Bank Plaza", phone="+1868-615-8222"),
+            Restaurant(name="Al Mohammed on the Link Up", location="Teaching and Learning Centre", description="Burgers and sandwiches served near the Teaching and Learning Centre.", latitude=10.64153, longitude=-61.39671, category="Teaching & Learning Centre", phone="Unknown"),
         ]
 
         for place in places:
@@ -97,7 +92,7 @@ def initialize():
             MenuItem(name="Chicken Sandwich", price=40.0, description="Grilled chicken on toasted bread with fresh lettuce and tomato", is_available=True, restaurant_id=pid("La Bloom Café")),
             MenuItem(name="Cheese Croissant", price=20.0, description="Buttery croissant filled with melted cheddar cheese", is_available=True, restaurant_id=pid("La Bloom Café")),
             MenuItem(name="Fresh Orange Juice", price=18.0, description="Freshly squeezed orange juice", is_available=True, restaurant_id=pid("La Bloom Café")),
-            #Vending Machine (ice-cream)
+            #Vending Machine (Drinks)
             MenuItem(name="Hola Kola", price=8.0, description="Classic Flavorite fruit lolly in refreshing cola and tropical flavours — a Trini childhood favourite", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Likka Stik", price=12.0, description="Creamy flavoured ice lolly on a stick — smooth, sweet and loved by generations of Trinidadians", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Milkies", price=8.0, description="Soft and creamy milk-based frozen treat — light, smooth and perfect for a quick cool down", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
@@ -108,7 +103,7 @@ def initialize():
             MenuItem(name="Nutty Royale Cone", price=18.0, description="Crispy waffle cone filled with vanilla ice cream and topped with chocolate and crushed nuts", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Screwball", price=12.0, description="Fruity spiral ice cream in a cup with a bubblegum surprise at the bottom — a fun Trini classic", is_available=False, restaurant_id=pid("Vending Machine (Ice Cream)")),
             MenuItem(name="Ice Cream Sandwich", price=13.0, description="Creamy vanilla ice cream pressed between two soft chocolate wafer biscuits", is_available=True, restaurant_id=pid("Vending Machine (Ice Cream)")),
-            #Mini Mart (SAC)
+            #Campus Mini Mart (SAC)
             MenuItem(name="Pringles (Original)", price=25.0, description="Classic original flavour Pringles potato crisps", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Cheetos", price=18.0, description="Crunchy cheesy corn puffs", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Crix Crackers", price=10.0, description="Iconic Trinidadian cream crackers", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
@@ -119,34 +114,20 @@ def initialize():
             MenuItem(name="Milo (can)", price=18.0, description="Chilled canned Milo chocolate milk drink", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Fresh Start Juice", price=10.0, description="Assorted fruit juices in various flavours", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
             MenuItem(name="Bottled Water", price=8.0, description="Chilled 500ml bottled water — refreshing and essential for campus life", is_available=True, restaurant_id=pid("Mini Mart (SAC)")),
-            # Caribbean Natural Juices
+            # Just Juiced
             MenuItem(name="Lime Juice", price=12.0, description="Freshly squeezed lime juice, sweetened to taste", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Passion Fruit Juice", price=15.0, description="Fresh passion fruit blended with water and sugar", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Watermelon Juice", price=14.0, description="Cold blended watermelon juice", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Mango Juice", price=15.0, description="Thick blended mango juice from local mangoes", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
             MenuItem(name="Mixed Fruit Punch", price=16.0, description="Blend of seasonal tropical fruits", is_available=True, restaurant_id=pid("Caribbean Natural Juices")),
-            # Celes and Son
-            MenuItem(name="Stewed Beef & Rice", price=55.0, description="Tender stewed beef with white rice and peas", is_available=True, restaurant_id=pid("Celes and Son Home-style Cooking")),
-            MenuItem(name="Dhal & Rice", price=40.0, description="Split peas dhal with steamed white rice", is_available=True, restaurant_id=pid("Celes and Son Home-style Cooking")),
-            MenuItem(name="Bodi & Potato Curry", price=45.0, description="Long beans and potato cooked in curry sauce", is_available=True, restaurant_id=pid("Celes and Son Home-style Cooking")),
-            MenuItem(name="Fried Bake", price=10.0, description="Light fluffy fried bake, served alone or with filling", is_available=True, restaurant_id=pid("Celes and Son Home-style Cooking")),
-            MenuItem(name="Lemonade", price=12.0, description="Chilled homemade lemonade", is_available=True, restaurant_id=pid("Celes and Son Home-style Cooking")),
-            # Maureen's Cuisine
-            MenuItem(name="Cheese Pie", price=15.0, description="Flaky pastry filled with seasoned cheese", is_available=True, restaurant_id=pid("Maureen's Cuisine")),
-            MenuItem(name="Chicken Pie", price=18.0, description="Golden pastry with seasoned chicken filling", is_available=True, restaurant_id=pid("Maureen's Cuisine")),
-            MenuItem(name="Ham & Cheese Sandwich", price=25.0, description="Soft hops bread with ham, cheese and lettuce", is_available=True, restaurant_id=pid("Maureen's Cuisine")),
-            MenuItem(name="Sausage Roll", price=14.0, description="Puff pastry wrapped around spiced pork sausage", is_available=True, restaurant_id=pid("Maureen's Cuisine")),
-            MenuItem(name="Juice Box", price=10.0, description="Assorted juice boxes — various flavours", is_available=True, restaurant_id=pid("Maureen's Cuisine")),
             # Oriental Cuisine
             MenuItem(name="Fried Rice", price=40.0, description="Classic Chinese-style fried rice with egg and vegetables", is_available=True, restaurant_id=pid("Oriental Cuisine")),
             MenuItem(name="Chow Mein", price=45.0, description="Stir-fried noodles with mixed vegetables and soy sauce", is_available=True, restaurant_id=pid("Oriental Cuisine")),
             MenuItem(name="Sweet & Sour Chicken", price=55.0, description="Crispy chicken tossed in tangy sweet and sour sauce", is_available=True, restaurant_id=pid("Oriental Cuisine")),
             MenuItem(name="Wonton Soup", price=30.0, description="Light broth with pork dumplings and scallions", is_available=True, restaurant_id=pid("Oriental Cuisine")),
             MenuItem(name="Spring Rolls (2 pcs)", price=20.0, description="Crispy vegetable spring rolls with dipping sauce", is_available=True, restaurant_id=pid("Oriental Cuisine")),
-            # Lee's Doubles
+            # Panks Sweet Sauce Doubles
             MenuItem(name="Doubles", price=8.0, description="Two bara with curried channa — the classic Trini breakfast", is_available=True, restaurant_id=pid("Lee's Doubles")),
-            MenuItem(name="Doubles with Slight", price=8.0, description="Doubles with mild pepper sauce", is_available=True, restaurant_id=pid("Lee's Doubles")),
-            MenuItem(name="Doubles with Extra Pepper", price=8.0, description="Doubles loaded with hot pepper sauce for the brave", is_available=True, restaurant_id=pid("Lee's Doubles")),
             MenuItem(name="Aloo Pie", price=10.0, description="Fried dough filled with curried potato and seasoning", is_available=True, restaurant_id=pid("Lee's Doubles")),
             MenuItem(name="Pholourie", price=10.0, description="Fried split peas fritters served with tamarind sauce", is_available=True, restaurant_id=pid("Lee's Doubles")),
             # Juman's Roti Shop
@@ -155,7 +136,7 @@ def initialize():
             MenuItem(name="Paratha with Aloo", price=35.0, description="Flaky paratha roti with curried potato", is_available=True, restaurant_id=pid("Juman's Roti Shop")),
             MenuItem(name="Bus-Up-Shot with Shrimp", price=55.0, description="Torn paratha roti with curried shrimp filling", is_available=True, restaurant_id=pid("Juman's Roti Shop")),
             MenuItem(name="Mango Chow", price=15.0, description="Green mango with pepper, garlic and chadon beni", is_available=True, restaurant_id=pid("Juman's Roti Shop")),
-            # Veg & More
+            # Veg Out
             MenuItem(name="Spinach Pie", price=15.0, description="Pastry filled with seasoned spinach", is_available=True, restaurant_id=pid("Veg & More")),
             MenuItem(name="Vegetable Patty", price=14.0, description="Golden patty filled with mixed vegetables", is_available=True, restaurant_id=pid("Veg & More")),
             MenuItem(name="Apple Juice", price=12.0, description="Chilled apple juice", is_available=True, restaurant_id=pid("Veg & More")),
@@ -178,11 +159,6 @@ def initialize():
             MenuItem(name="Guava Cheese", price=10.0, description="Sweet guava paste — a traditional Trinidadian treat", is_available=True, restaurant_id=pid("Linda's")),
             MenuItem(name="Tamarind Balls", price=8.0, description="Sweet and tangy tamarind candy balls", is_available=True, restaurant_id=pid("Linda's")),
             MenuItem(name="Fresh Carrot Juice", price=15.0, description="Freshly blended carrot juice", is_available=True, restaurant_id=pid("Linda's")),
-            # Ave 5055
-            MenuItem(name="Ice Cream Cone", price=15.0, description="Creamy soft-serve ice cream in a cone", is_available=True, restaurant_id=pid("Ave 5055")),
-            MenuItem(name="Brownie Slice", price=20.0, description="Rich dark chocolate brownie", is_available=True, restaurant_id=pid("Ave 5055")),
-            MenuItem(name="Cheesecake Slice", price=25.0, description="Smooth New York-style cheesecake", is_available=True, restaurant_id=pid("Ave 5055")),
-            MenuItem(name="Chocolate Cake Slice", price=22.0, description="Moist layered chocolate cake with ganache icing", is_available=True, restaurant_id=pid("Ave 5055")),
             # The Gourmet Pot
             MenuItem(name="Grilled Salmon", price=85.0, description="Pan-seared salmon fillet with herb butter and seasonal vegetables", is_available=True, restaurant_id=pid("The Gourmet Pot")),
             MenuItem(name="Pasta Primavera", price=60.0, description="Fettuccine with sautéed seasonal vegetables in garlic olive oil", is_available=True, restaurant_id=pid("The Gourmet Pot")),
@@ -202,8 +178,8 @@ def initialize():
             # Subway
             MenuItem(name="Italian BMT (6-inch)", price=55.0, description="Pepperoni, salami and ham on Italian bread with your choice of toppings", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Chicken Teriyaki (Footlong)", price=85.0, description="Teriyaki chicken strip sub on honey oat bread", is_available=True, restaurant_id=pid("Subway")),
-            MenuItem(name="Veggie Delite (6-inch)", price=45.0, description="Fresh garden vegetables on your choice of bread", is_available=True, restaurant_id=pid("Subway")),
-            MenuItem(name="Cookies (3 pack)", price=20.0, description="Freshly baked Subway cookies — chocolate chip or macadamia nut", is_available=True, restaurant_id=pid("Subway")),
+            MenuItem(name="Veggie Delite (6-inch)", price=27.0, description="Fresh garden vegetables on your choice of bread", is_available=True, restaurant_id=pid("Subway")),
+            MenuItem(name="Cookies (3 pack)", price=15.0, description="Freshly baked Subway cookies — chocolate chip or macadamia nut", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Philly Cheese Steak (6-inch)", price=45.0, description="Steak, green peppers, onions, double American cheese and mayo on toasted bread", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Philly Cheese Steak (Footlong)", price=75.0, description="Steak, green peppers, onions, double American cheese and mayo on toasted footlong bread", is_available=True, restaurant_id=pid("Subway")),
             MenuItem(name="Meatball Marinara (6-inch)", price=40.0, description="Hearty meatballs smothered in rich marinara sauce on freshly baked bread, topped with your choice of veggies and cheese", is_available=True, restaurant_id=pid("Subway")),
@@ -219,18 +195,13 @@ def initialize():
             MenuItem(name="Mango Smoothie", price=30.0, description="Thick blended mango smoothie", is_available=True, restaurant_id=pid("Boba and Brew Café")),
             MenuItem(name="Strawberry Ice Cream", price=25.0, description="Two scoops of strawberry ice cream", is_available=True, restaurant_id=pid("Boba and Brew Café")),
             MenuItem(name="Croissant", price=20.0, description="Buttery baked croissant", is_available=True, restaurant_id=pid("Boba and Brew Café")),
-            # Al Mohammed on the Link Up
-            MenuItem(name="Classic Burger", price=50.0, description="Beef patty with lettuce, tomato, onion and special sauce", is_available=True, restaurant_id=pid("Al Mohammed on the Link Up")),
-            MenuItem(name="Chicken Sandwich", price=45.0, description="Crispy fried chicken fillet on a toasted bun", is_available=True, restaurant_id=pid("Al Mohammed on the Link Up")),
-            MenuItem(name="Doubles", price=8.0, description="Trini-style doubles with curried channa", is_available=True, restaurant_id=pid("Al Mohammed on the Link Up")),
-            MenuItem(name="Soft Drink", price=10.0, description="Chilled canned soft drink", is_available=True, restaurant_id=pid("Al Mohammed on the Link Up")),
         ]
 
         for item in items:
             db.add(item)
         db.commit()
         
-        print("Database Initialized with all 24 UWI campus food vendors!")
+        print("Database Initialized!")
 
 @user_app.command("create")
 def create_user(username: str, email: str, password: str, role: str = "regular_user"):
